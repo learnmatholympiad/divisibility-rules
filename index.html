@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Divisibility Rules</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fira+Code:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow:#FFD93D; --orange:#FF8C42; --pink:#FF6B9D; --purple:#845EC2;
+  --blue:#0081CF; --teal:#00C9A7; --green:#4CAF50; --red:#E84040;
+  --lime:#A8E063; --cyan:#38BDF8; --violet:#C77DFF;
+  --bg:#FFFBF0; --dark:#1A1333; --card:#FFFFFF;
+  --text:#1A1333; --muted:#6B6880;
+  --radius:16px; --shadow:0 6px 28px rgba(26,19,51,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
+
+/* ── SLIDE SYSTEM ── */
+.deck{width:100vw;height:100vh;position:relative;}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:32px 52px 88px;opacity:0;pointer-events:none;transition:opacity .35s ease,transform .35s ease;transform:translateX(60px);}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0);}
+.slide.out{opacity:0;transform:translateX(-60px);}
+
+/* ── NAV ── */
+.nav{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:var(--dark);border-radius:999px;padding:9px 18px;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,0.28);}
+.nav button{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:4px 10px;border-radius:999px;transition:background .15s;font-family:'Nunito',sans-serif;}
+.nav button:hover{background:rgba(255,255,255,0.12);}
+.nav .slide-counter{color:rgba(255,255,255,0.6);font-size:12px;font-weight:800;min-width:56px;text-align:center;letter-spacing:.04em;}
+.nav .dots{display:flex;gap:5px;}
+.nav .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.22);transition:background .2s,transform .2s;cursor:pointer;}
+.nav .dot.active{background:var(--yellow);transform:scale(1.35);}
+
+/* ── TYPOGRAPHY ── */
+.slide-label{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;opacity:.5;}
+h1{font-size:clamp(26px,4.2vw,52px);font-weight:900;line-height:1.1;}
+h2{font-size:clamp(18px,2.6vw,34px);font-weight:900;line-height:1.2;margin-bottom:12px;}
+h3{font-size:15px;font-weight:800;margin-bottom:4px;}
+p,li{font-size:clamp(13px,1.5vw,15px);line-height:1.6;color:var(--text);}
+
+/* ── UTILITIES ── */
+.tag{display:inline-block;padding:3px 12px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.06em;}
+.tag-yellow{background:var(--yellow);color:var(--dark);}
+.tag-blue{background:var(--blue);color:#fff;}
+.tag-pink{background:var(--pink);color:#fff;}
+.tag-teal{background:var(--teal);color:var(--dark);}
+.tag-purple{background:var(--purple);color:#fff;}
+.tag-orange{background:var(--orange);color:#fff;}
+.tag-lime{background:var(--lime);color:var(--dark);}
+.tag-cyan{background:var(--cyan);color:var(--dark);}
+.tag-violet{background:var(--violet);color:#fff;}
+.card{background:var(--card);border-radius:var(--radius);padding:16px 20px;box-shadow:var(--shadow);}
+.pill-btn{display:inline-block;padding:8px 18px;border-radius:999px;border:none;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:transform .12s,box-shadow .12s;}
+.pill-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.15);}
+.pill-btn:active{transform:scale(0.97);}
+.pill-btn[disabled]{opacity:.35;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
+code,.mono{font-family:'Fira Code',monospace;background:#F0EBF8;border-radius:6px;padding:1px 7px;font-size:.88em;color:var(--purple);}
+.blob{position:absolute;border-radius:50%;filter:blur(65px);opacity:.18;pointer-events:none;z-index:0;}
+.slide>*{position:relative;z-index:1;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.recap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;}
+.recap-chip{background:white;border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);border-left:4px solid;display:flex;flex-direction:column;gap:6px;}
+.tri-row{display:flex;gap:14px;margin-top:10px;flex:1;}
+.tri-card{flex:1;background:white;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid;display:flex;flex-direction:column;gap:8px;}
+
+/* ══ S1 TITLE ══ */
+#s1{background:linear-gradient(135deg,#EEE8FF 0%,#E8F5FF 50%,#FFFBE8 100%);justify-content:center;}
+#s1 .b1{width:420px;height:420px;background:var(--purple);top:-110px;right:-90px;}
+#s1 .b2{width:300px;height:300px;background:var(--yellow);bottom:-70px;left:-70px;}
+#s1 h1 em{color:var(--purple);font-style:normal;}
+
+/* ══ S2 HOOK ══ */
+#s2{background:#FFF8E8;}
+#s2 .b1{width:280px;height:280px;background:var(--orange);top:-60px;right:-60px;}
+.hook-card{background:white;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid;display:flex;flex-direction:column;gap:8px;}
+
+/* ══ S3 RULES 2/5/10/100 ══ */
+#s3{background:linear-gradient(135deg,#FFFBF0 0%,#F0FFF8 100%);}
+#s3 .b1{width:300px;height:300px;background:var(--teal);top:-70px;right:-70px;}
+.rule-table{width:100%;border-collapse:separate;border-spacing:0 8px;}
+.rule-table th{text-align:left;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 14px 4px;}
+.rule-table td{padding:11px 14px;background:white;font-size:13px;vertical-align:middle;}
+.rule-table tr td:first-child{border-radius:10px 0 0 10px;font-weight:900;font-size:18px;color:var(--purple);}
+.rule-table tr td:last-child{border-radius:0 10px 10px 0;}
+.rule-table tr td:nth-child(2){font-weight:700;}
+
+/* ══ S4 RULES 3 AND 9 ══ */
+#s4{background:#F5F0FF;}
+#s4 .b1{width:280px;height:280px;background:var(--purple);bottom:-60px;left:-60px;}
+
+/* ══ S5 RULE 6 ══ */
+#s5{background:linear-gradient(135deg,#F0F8FF 0%,#F5F0FF 100%);}
+#s5 .b1{width:300px;height:300px;background:var(--blue);top:-70px;left:-70px;}
+.world-card{background:white;border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);border-left:4px solid;display:flex;gap:10px;align-items:flex-start;}
+.world-card .icon{font-size:26px;}
+
+/* ══ S6 POWERS OF 2 ══ */
+#s6{background:#FFF0E8;}
+#s6 .b1{width:260px;height:260px;background:var(--orange);top:-60px;right:-60px;}
+.pow-row{display:flex;align-items:center;gap:10px;margin:14px 0 16px;}
+.pow-step{flex:1;background:white;border-radius:14px;padding:14px 12px;box-shadow:var(--shadow);text-align:center;border-top:4px solid var(--orange);}
+.pow-arrow{font-size:22px;color:var(--muted);}
+
+/* ══ S7 RULE 11 ══ */
+#s7{background:#F0FFF8;}
+#s7 .b1{width:280px;height:280px;background:var(--teal);bottom:-60px;right:-60px;}
+
+/* ══ S8 ALL RULES SUMMARY ══ */
+#s8{background:#FFF8E1;}
+#s8 .b1{width:280px;height:280px;background:var(--yellow);top:-60px;left:-60px;}
+
+/* ══ S9 NUMBER INSPECTOR ══ */
+#s9{background:var(--dark);color:white;}
+#s9 h2{color:white;}
+#s9 .slide-label{opacity:.5;}
+.inspect-controls{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px;}
+.inspect-btn{padding:8px 14px;border-radius:12px;border:2px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);color:white;font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;cursor:pointer;transition:all .2s;}
+.inspect-btn:hover{border-color:var(--yellow);background:rgba(255,217,61,0.08);}
+.inspect-btn.pass{border-color:var(--teal);background:rgba(0,201,167,0.12);color:var(--teal);}
+.inspect-btn.fail{border-color:#E84040;background:rgba(232,64,64,0.10);color:#E84040;}
+.inspect-stage{background:#120f24;border-radius:16px;padding:18px 22px;flex:1;display:flex;gap:20px;}
+.inspect-number{min-width:160px;display:flex;flex-direction:column;gap:10px;}
+.num-display{font-family:'Fira Code',monospace;font-size:clamp(28px,4vw,44px);font-weight:700;color:var(--yellow);line-height:1;}
+.num-pick{display:flex;flex-direction:column;gap:6px;}
+.num-chip{padding:7px 12px;border-radius:10px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6);font-family:'Fira Code',monospace;font-size:13px;cursor:pointer;transition:all .15s;font-weight:700;}
+.num-chip:hover{border-color:rgba(255,255,255,0.3);}
+.num-chip.active{border-color:var(--yellow);background:rgba(255,217,61,0.08);color:var(--yellow);}
+.inspect-results{flex:1;display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
+.result-row{border-radius:10px;padding:9px 13px;font-size:12.5px;font-weight:700;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.result-row.pass-row{background:rgba(0,201,167,0.12);border-left:3px solid var(--teal);color:#9ef5e3;}
+.result-row.fail-row{background:rgba(232,64,64,0.08);border-left:3px solid #E84040;color:#f5a0a0;}
+.result-row.neutral-row{background:rgba(255,255,255,0.04);border-left:3px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);}
+.result-badge{font-size:14px;flex-shrink:0;}
+.inspect-hint{font-size:12px;color:rgba(255,255,255,0.4);margin-top:6px;text-align:center;}
+
+/* ══ S10 MISSING DIGIT ══ */
+#s10{background:#1A1333;color:white;}
+#s10 h2{color:white;}
+#s10 .slide-label{opacity:.5;}
+.puzzle-layout{display:flex;gap:16px;flex:1;margin-top:8px;}
+.puzzle-list{min-width:230px;display:flex;flex-direction:column;gap:8px;}
+.puzzle-row{background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.08);border-radius:12px;padding:9px 12px;cursor:pointer;transition:all .15s;}
+.puzzle-row:hover{border-color:rgba(255,255,255,0.25);}
+.puzzle-row.active{border-color:var(--yellow);background:rgba(255,217,61,0.08);}
+.puzzle-row .p-num{font-family:'Fira Code',monospace;font-size:13px;font-weight:700;color:white;}
+.puzzle-row .p-goal{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.puzzle-panel{flex:1;background:#0E0B1E;border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;}
+.puzzle-problem{font-family:'Fira Code',monospace;font-size:clamp(22px,3vw,34px);font-weight:700;color:var(--yellow);letter-spacing:.08em;}
+.puzzle-problem span.x{color:var(--violet);}
+.puzzle-step{font-size:13px;color:rgba(255,255,255,0.55);line-height:1.7;min-height:80px;}
+.puzzle-answer{font-size:14px;font-weight:800;color:var(--teal);min-height:20px;}
+
+/* ══ S11 QUIZ ══ */
+#s11{background:#F5F0FF;}
+#s11 .b1{width:260px;height:260px;background:var(--purple);top:-60px;right:-60px;}
+.quiz-q{font-size:clamp(13px,1.9vw,18px);font-weight:800;margin-bottom:14px;line-height:1.4;}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.quiz-opt{padding:11px 14px;border-radius:14px;border:2.5px solid #ddd;background:white;font-family:'Nunito',sans-serif;font-weight:700;font-size:12.5px;cursor:pointer;text-align:left;transition:all .18s;box-shadow:var(--shadow);line-height:1.4;}
+.quiz-opt:hover:not([disabled]){border-color:var(--purple);transform:translateY(-2px);}
+.quiz-opt.correct{border-color:var(--teal);background:#E8FBF4;color:#0F6E56;}
+.quiz-opt.wrong{border-color:var(--red);background:#FFF0F0;color:#A32D2D;}
+.quiz-fb{min-height:50px;font-size:13px;font-weight:700;padding-top:10px;display:flex;align-items:center;gap:8px;line-height:1.4;}
+.quiz-nav{display:flex;align-items:center;gap:12px;margin-top:8px;}
+.q-ctr{font-size:12px;font-weight:700;color:var(--muted);}
+.prog-bar{height:6px;background:#e8e0ff;border-radius:3px;margin-bottom:12px;}
+.prog-fill{height:100%;background:var(--purple);border-radius:3px;transition:width .4s;}
+.diff-badge{font-size:10px;font-weight:800;padding:2px 9px;border-radius:999px;letter-spacing:.06em;}
+.diff-easy{background:#E8FBF4;color:#0F6E56;}
+.diff-medium{background:#FFF8E1;color:#8B5E00;}
+.diff-hard{background:#FFF0F0;color:#A32D2D;}
+
+/* ══ S12 FINAL ══ */
+#s12{background:var(--dark);color:white;justify-content:center;align-items:center;text-align:center;}
+#s12 .b1{width:360px;height:360px;background:var(--purple);top:-100px;left:-100px;}
+#s12 .b2{width:300px;height:300px;background:var(--teal);bottom:-80px;right:-80px;}
+#s12 h2{color:white;font-size:clamp(22px,3.2vw,40px);}
+.final-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;width:100%;max-width:840px;}
+.final-card{border-radius:var(--radius);padding:16px 14px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;}
+.final-card h3{font-size:13px;color:white;}
+.final-card p{font-size:11px;color:rgba(255,255,255,0.55);line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- ══════════════════════════════════════
+     SLIDE 1 — TITLE
+══════════════════════════════════════ -->
+<div class="slide active" id="s1">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+    <span class="tag tag-purple">Math · 6th Grade</span>
+    <span class="tag tag-teal">Number Theory</span>
+    <span class="tag tag-yellow">New Topic</span>
+  </div>
+  <h1><em>Divisibility</em> Rules ➗</h1>
+  <p style="font-size:clamp(14px,1.8vw,19px);color:var(--muted);margin-top:14px;font-weight:600;">Short-cut tests that let you check if one number divides another perfectly — no long division required</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;">
+    <span class="tag tag-orange">✦ Rules for 2, 5, 10, 100</span>
+    <span class="tag tag-blue">✦ Rules for 3 &amp; 9</span>
+    <span class="tag tag-lime">✦ Powers of 2 (4, 8, 16)</span>
+    <span class="tag tag-pink">✦ Rule for 11</span>
+    <span class="tag tag-purple">✦ Quiz</span>
+  </div>
+  <div style="margin-top:26px;background:white;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);display:inline-flex;gap:12px;align-items:center;max-width:640px;">
+    <span style="font-size:22px;">💡</span>
+    <p style="font-size:13px;"><strong>Big idea:</strong> a number is <strong>divisible</strong> by another if the quotient is a whole number and the remainder is <strong>zero</strong>. These rules let you figure that out in seconds.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 2 — THE HOOK
+══════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="blob b1"></div>
+  <div class="slide-label">The Big Idea</div>
+  <h2>Why do we need shortcuts? 🤔</h2>
+  <div class="grid2" style="flex:1;margin-top:8px;gap:12px;">
+    <div class="hook-card" style="border-color:var(--orange);">
+      <h3>📚 The Long Way…</h3>
+      <p style="font-size:12.5px;">Suppose you need to know if <strong>9,762</strong> is divisible by <strong>12</strong>. You could do long division — but that takes time and is easy to mess up.</p>
+      <div style="background:#FFF0E8;border-radius:10px;padding:10px 14px;margin-top:4px;">
+        <p style="font-size:12px;color:var(--muted);">9762 ÷ 12 = ??? <span style="color:var(--orange);">← tedious to compute by hand</span></p>
+      </div>
+    </div>
+    <div class="hook-card" style="border-color:var(--teal);">
+      <h3>⚡ The Shortcut Way</h3>
+      <p style="font-size:12.5px;">With divisibility rules you can answer the same question in under 10 seconds — no calculator, no long division.</p>
+      <div style="background:#E8FBF4;border-radius:10px;padding:10px 14px;margin-top:4px;display:flex;flex-direction:column;gap:4px;">
+        <p style="font-size:12px;color:#0F6E56;font-weight:700;">✓ Is 9762 ÷ 3 exact? → digit sum: 9+7+6+2=24 ✓</p>
+        <p style="font-size:12px;color:#A32D2D;font-weight:700;">✗ Is 9762 ÷ 4 exact? → last 2 digits: 62÷4 has remainder ✗</p>
+        <p style="font-size:12px;color:#8B5E00;font-weight:700;">∴ 9762 ÷ 12 is NOT exact — done! 🎉</p>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:12px;background:var(--yellow);border-radius:12px;padding:10px 16px;">
+    <p style="font-size:13px;color:var(--dark);"><strong>🎯 The payoff:</strong> once you know the rules, you can test big numbers instantly — useful in competition math, everyday life, and checking your own work.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 3 — RULES FOR 2, 5, 10, 100
+══════════════════════════════════════ -->
+<div class="slide" id="s3">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 1 — The Units Digit Family</div>
+  <h2>Divisibility by 2, 5, 10, and 100 🔢</h2>
+  <table class="rule-table">
+    <tr>
+      <th>Divisor</th><th>Rule</th><th>Example ✓</th><th>Counter-example ✗</th>
+    </tr>
+    <tr>
+      <td style="color:var(--blue);">2</td>
+      <td>Units digit is <strong>0, 2, 4, 6, or 8</strong> (even number)</td>
+      <td>138 → ends in <strong>8</strong> ✓</td>
+      <td>73 → ends in 3 ✗</td>
+    </tr>
+    <tr>
+      <td style="color:var(--teal);">5</td>
+      <td>Units digit is <strong>0 or 5</strong></td>
+      <td>715 → ends in <strong>5</strong> ✓</td>
+      <td>42 → ends in 2 ✗</td>
+    </tr>
+    <tr>
+      <td style="color:var(--orange);">10</td>
+      <td>Units digit is <strong>0</strong></td>
+      <td>840 → ends in <strong>0</strong> ✓</td>
+      <td>25 → ends in 5 ✗</td>
+    </tr>
+    <tr>
+      <td style="color:var(--purple);">100</td>
+      <td>Units digit <strong>AND</strong> tens digit are both <strong>0</strong></td>
+      <td>1,300 → ends in <strong>00</strong> ✓</td>
+      <td>40 → only one 0 ✗</td>
+    </tr>
+  </table>
+  <div style="margin-top:14px;background:white;border-radius:14px;padding:12px 18px;box-shadow:var(--shadow);">
+    <p style="font-size:13px;"><strong>🧩 Practice question:</strong> The pages of a book are labeled 1 to 300. How many page numbers <em>contain the digit 5</em> and are <em>also divisible by 5</em>?</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 4 — RULES FOR 3 AND 9
+══════════════════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 2 — The Digit Sum Family</div>
+  <h2>Divisibility by 3 and 9 ✏️</h2>
+  <div class="tri-row">
+    <div class="tri-card" style="border-color:var(--purple);">
+      <div style="font-size:26px;">3️⃣</div>
+      <h3>Rule for 3</h3>
+      <p style="font-size:13px;">Add up <strong>all the digits</strong>. If the sum is divisible by 3, so is the whole number.</p>
+      <div style="background:#F5F0FF;border-radius:10px;padding:9px 12px;margin-top:6px;">
+        <p style="font-size:13px;font-weight:700;">96 → 9+6 = <span style="color:var(--purple);">15</span> → 15÷3=5 ✓</p>
+        <p style="font-size:12px;color:var(--muted);margin-top:2px;">So 96 is divisible by 3.</p>
+      </div>
+    </div>
+    <div class="tri-card" style="border-color:var(--violet);">
+      <div style="font-size:26px;">9️⃣</div>
+      <h3>Rule for 9</h3>
+      <p style="font-size:13px;">Same idea — add up <strong>all the digits</strong>. But this time the sum must be divisible by <strong>9</strong>.</p>
+      <div style="background:#F5EEFF;border-radius:10px;padding:9px 12px;margin-top:6px;">
+        <p style="font-size:13px;font-weight:700;">648 → 6+4+8 = <span style="color:var(--violet);">18</span> → 18÷9=2 ✓</p>
+        <p style="font-size:12px;color:var(--muted);margin-top:2px;">So 648 is divisible by 9.</p>
+      </div>
+    </div>
+    <div class="tri-card" style="border-color:var(--pink);">
+      <div style="font-size:26px;">🔗</div>
+      <h3>Connection</h3>
+      <p style="font-size:13px;">Every number divisible by 9 is <em>also</em> divisible by 3 — but not the other way around.</p>
+      <div style="background:#FFF0F5;border-radius:10px;padding:9px 12px;margin-top:6px;">
+        <p style="font-size:13px;font-weight:700;">9 rule ⊂ 3 rule</p>
+        <p style="font-size:12px;color:var(--muted);margin-top:2px;">e.g. 15 → ÷3 ✓, but 1+5=6, 6÷9 ✗</p>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:14px;background:var(--yellow);border-radius:12px;padding:10px 16px;">
+    <p style="font-size:13px;color:var(--dark);"><strong>💡 Why does this work?</strong> Any digit <em>d</em> in position <em>p</em> contributes <code>d × 10ᵖ</code> to the number. Since 10 ≡ 1 (mod 9), each digit's place value doesn't matter for divisibility by 9 — only the digit itself does.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 5 — RULE FOR 6
+══════════════════════════════════════ -->
+<div class="slide" id="s5">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 2 — Combined Rules</div>
+  <h2>Divisibility by 6 — using two rules at once 🔀</h2>
+  <div class="tri-row" style="margin-top:8px;">
+    <div class="tri-card" style="border-color:var(--blue);">
+      <div style="font-size:26px;">2️⃣</div>
+      <h3>Step 1 — Check Rule for 2</h3>
+      <p style="font-size:13px;">Is the number <strong>even</strong>? (Units digit is 0, 2, 4, 6, or 8?)</p>
+      <p style="font-size:13px;margin-top:8px;font-weight:700;color:var(--blue);">48 → ends in 8 ✓</p>
+    </div>
+    <div class="tri-card" style="border-color:var(--purple);">
+      <div style="font-size:26px;">3️⃣</div>
+      <h3>Step 2 — Check Rule for 3</h3>
+      <p style="font-size:13px;">Is the <strong>digit sum</strong> divisible by 3?</p>
+      <p style="font-size:13px;margin-top:8px;font-weight:700;color:var(--purple);">48 → 4+8=12 → 12÷3=4 ✓</p>
+    </div>
+    <div class="tri-card" style="border-color:var(--teal);">
+      <div style="font-size:26px;">6️⃣</div>
+      <h3>Both pass → divisible by 6!</h3>
+      <p style="font-size:13px;">6 = 2 × 3, and 2 and 3 share no common factors, so you can combine their rules.</p>
+      <p style="font-size:13px;margin-top:8px;font-weight:700;color:var(--teal);">48 ÷ 6 = 8 ✓</p>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:14px;gap:12px;">
+    <div class="world-card" style="border-color:var(--lime);">
+      <span class="icon">✅</span>
+      <div><h3>396 is divisible by 6</h3><p style="font-size:12.5px;">Even? Yes (ends in 6). Digit sum: 3+9+6=18, divisible by 3. Both rules pass.</p></div>
+    </div>
+    <div class="world-card" style="border-color:var(--red);">
+      <span class="icon">❌</span>
+      <div><h3>21 is NOT divisible by 6</h3><p style="font-size:12.5px;">Digit sum 2+1=3 → passes rule for 3. But 21 is odd → fails rule for 2. Both must pass.</p></div>
+    </div>
+  </div>
+  <div style="margin-top:12px;background:var(--yellow);border-radius:12px;padding:10px 16px;">
+    <p style="font-size:13px;color:var(--dark);"><strong>💡 Key insight:</strong> this "combine two rules" trick works whenever the divisor can be written as a product of <em>coprime</em> factors you already know rules for.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 6 — POWERS OF 2 (4, 8, 16)
+══════════════════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 3 — Powers of 2</div>
+  <h2>Divisibility by 4, 8, and 16 💪</h2>
+  <p style="font-size:13px;margin-bottom:14px;">For higher powers of 2, only the <em>last few digits</em> determine divisibility.</p>
+  <div class="pow-row">
+    <div class="pow-step">
+      <div style="font-size:26px;">4️⃣</div>
+      <h3 style="margin-top:6px;">Last 2 digits</h3>
+      <p style="font-size:12px;">If the number formed by the <strong>last 2 digits</strong> is divisible by 4, so is the whole number.</p>
+      <p style="font-size:13px;font-weight:700;color:var(--orange);margin-top:8px;">1,<u>32</u> → 32÷4=8 ✓</p>
+    </div>
+    <div class="pow-arrow">→</div>
+    <div class="pow-step">
+      <div style="font-size:26px;">8️⃣</div>
+      <h3 style="margin-top:6px;">Last 3 digits</h3>
+      <p style="font-size:12px;">If the number formed by the <strong>last 3 digits</strong> is divisible by 8, so is the whole number.</p>
+      <p style="font-size:13px;font-weight:700;color:var(--orange);margin-top:8px;">2,<u>760</u> → 760÷8=95 ✓</p>
+    </div>
+    <div class="pow-arrow">→</div>
+    <div class="pow-step">
+      <div style="font-size:26px;">🔢</div>
+      <h3 style="margin-top:6px;">Last 4 digits</h3>
+      <p style="font-size:12px;">If the number formed by the <strong>last 4 digits</strong> is divisible by 16, so is the whole number.</p>
+      <p style="font-size:13px;font-weight:700;color:var(--orange);margin-top:8px;">8,<u>1760</u> → 1760÷16=110 ✓</p>
+    </div>
+  </div>
+  <div style="background:white;border-radius:14px;padding:12px 18px;box-shadow:var(--shadow);margin-top:4px;">
+    <p style="font-size:13px;"><strong>🔍 Try it:</strong> Is <strong>841,760</strong> divisible by 16? Check the last 4 digits: <code>1760 ÷ 16 = 110</code> — yes, exactly! So the answer is ✅.</p>
+  </div>
+  <div style="margin-top:12px;background:var(--yellow);border-radius:12px;padding:10px 16px;">
+    <p style="font-size:13px;color:var(--dark);"><strong>💡 Why?</strong> 100, 1000, 10000 are all divisible by 4, 8, and 16 respectively — so the higher digits never affect the remainder.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 7 — RULE FOR 11
+══════════════════════════════════════ -->
+<div class="slide" id="s7">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 3 — The Alternating Sum Rule</div>
+  <h2>Divisibility by 11 🔀</h2>
+  <div class="tri-row" style="margin-top:8px;">
+    <div class="tri-card" style="border-color:var(--teal);flex:1.2;">
+      <div style="font-size:26px;">📐</div>
+      <h3>The Rule</h3>
+      <p style="font-size:13px;">Number the digits <strong>right to left</strong> starting at position 1. Add up the <em>odd-position</em> digits, then add up the <em>even-position</em> digits. If the <strong>absolute difference</strong> is <strong>0 or 11</strong>, the number is divisible by 11.</p>
+    </div>
+    <div class="tri-card" style="border-color:var(--cyan);flex:1.8;">
+      <div style="font-size:26px;">🧮</div>
+      <h3>Worked Example — is 2,728 divisible by 11?</h3>
+      <div style="background:#E8FFFB;border-radius:10px;padding:10px 14px;margin-top:6px;font-family:'Fira Code',monospace;font-size:13px;line-height:2;">
+        <p>2 &nbsp;7 &nbsp;2 &nbsp;8  ← digits</p>
+        <p>↑ &nbsp;↑ &nbsp;↑ &nbsp;↑</p>
+        <p style="color:var(--purple);">pos 4 &nbsp;3 &nbsp;2 &nbsp;1</p>
+        <p>Odd positions (1,3): 8+2 = <strong style="color:var(--teal);">10</strong></p>
+        <p>Even positions (2,4): 7+2 = <strong style="color:var(--orange);">9</strong></p>
+        <p>|10 − 9| = <strong style="color:var(--teal);">1</strong> → <span style="color:var(--red);">not 0 or 11 ✗</span></p>
+      </div>
+    </div>
+    <div class="tri-card" style="border-color:var(--lime);">
+      <div style="font-size:26px;">✅</div>
+      <h3>Example that DOES pass</h3>
+      <div style="background:#F5FBE8;border-radius:10px;padding:9px 12px;margin-top:6px;font-family:'Fira Code',monospace;font-size:12.5px;line-height:1.9;">
+        <p><strong>715</strong></p>
+        <p>Odd (1,3): 5+7 = 12</p>
+        <p>Even (2): &nbsp; &nbsp;1 = 1</p>
+        <p>|12−1| = <strong style="color:var(--teal);">11</strong> ✓</p>
+        <p style="color:var(--teal);font-weight:800;">715 ÷ 11 = 65 ✓</p>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:14px;background:var(--yellow);border-radius:12px;padding:10px 16px;">
+    <p style="font-size:13px;color:var(--dark);"><strong>💡 Shortcut tip:</strong> for shorter numbers just alternate + and − from right to left: 715 → +5−1+7 = 11. If the result is 0 or ±11, it's divisible by 11.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 8 — ALL RULES AT A GLANCE
+══════════════════════════════════════ -->
+<div class="slide" id="s8">
+  <div class="blob b1"></div>
+  <div class="slide-label">Reference — All Rules</div>
+  <h2>Every rule we've covered 📋</h2>
+  <div class="recap-grid">
+    <div class="recap-chip" style="border-color:var(--blue);">
+      <span style="font-size:22px;">2️⃣</span><h3>Divisible by 2</h3>
+      <p style="font-size:12px;">Last digit is 0, 2, 4, 6, or 8</p>
+    </div>
+    <div class="recap-chip" style="border-color:var(--teal);">
+      <span style="font-size:22px;">3️⃣</span><h3>Divisible by 3</h3>
+      <p style="font-size:12px;">Sum of all digits is divisible by 3</p>
+    </div>
+    <div class="recap-chip" style="border-color:var(--orange);">
+      <span style="font-size:22px;">4️⃣</span><h3>Divisible by 4</h3>
+      <p style="font-size:12px;">Last 2 digits form a number divisible by 4</p>
+    </div>
+    <div class="recap-chip" style="border-color:var(--green);">
+      <span style="font-size:22px;">5️⃣</span><h3>Divisible by 5</h3>
+      <p style="font-size:12px;">Last digit is 0 or 5</p>
+    </div>
+    <div class="recap-chip" style="border-color:var(--purple);">
+      <span style="font-size:22px;">6️⃣</span><h3>Divisible by 6</h3>
+      <p style="font-size:12px;">Passes BOTH the rule for 2 AND the rule for 3</p>
+    </div>
+    <div class="recap-chip" style="border-color:var(--cyan);">
+      <span style="font-size:22px;">8️⃣</span><h3>Divisible by 8</h3>
+      <p style="font-size:12px;">Last 3 digits form a number divisible by 8</p>
+    </div>
+    <div class="recap-chip" style="border-color:var(--violet);">
+      <span style="font-size:22px;">9️⃣</span><h3>Divisible by 9</h3>
+      <p style="font-size:12px;">Sum of all digits is divisible by 9</p>
+    </div>
+    <div class="recap-chip" style="border-color:var(--yellow);">
+      <span style="font-size:22px;">🔟</span><h3>Divisible by 10</h3>
+      <p style="font-size:12px;">Last digit is 0</p>
+    </div>
+    <div class="recap-chip" style="border-color:var(--pink);">
+      <span style="font-size:22px;">1️⃣1️⃣</span><h3>Divisible by 11</h3>
+      <p style="font-size:12px;">Alternating digit sum (right-to-left) is 0 or ±11</p>
+    </div>
+    <div class="recap-chip" style="border-color:var(--orange);">
+      <span style="font-size:22px;">1️⃣6️⃣</span><h3>Divisible by 16</h3>
+      <p style="font-size:12px;">Last 4 digits form a number divisible by 16</p>
+    </div>
+    <div class="recap-chip" style="border-color:var(--lime);">
+      <span style="font-size:22px;">💯</span><h3>Divisible by 100</h3>
+      <p style="font-size:12px;">Last two digits are both 0 (ends in "00")</p>
+    </div>
+    <div class="recap-chip" style="border-color:var(--muted);">
+      <span style="font-size:22px;">🔗</span><h3>Combined Rules</h3>
+      <p style="font-size:12px;">Multiply coprime divisors: e.g. 12 = 3×4, so check rules for 3 AND 4</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 9 — NUMBER INSPECTOR (INTERACTIVE)
+══════════════════════════════════════ -->
+<div class="slide" id="s9">
+  <div class="slide-label">Try It — Number Inspector</div>
+  <h2>Pick a number. Test a rule. See the work. 🔍</h2>
+  <div class="inspect-stage" style="flex:1;margin-top:8px;">
+    <div class="inspect-number">
+      <p style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);">Pick a number</p>
+      <div class="num-pick" id="num-pick"></div>
+      <p style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:8px;">Then test a rule</p>
+      <div class="inspect-controls" id="inspect-controls" style="flex-direction:column;"></div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:baseline;gap:14px;">
+        <div class="num-display" id="num-display">48</div>
+        <p style="font-size:12px;color:rgba(255,255,255,0.4);">← currently inspecting</p>
+      </div>
+      <div class="inspect-results" id="inspect-results">
+        <div class="result-row neutral-row"><span class="result-badge">👆</span><span>Click a rule button on the left to test it.</span></div>
+      </div>
+      <div class="inspect-hint" id="inspect-hint">Try testing several rules on the same number!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 10 — MISSING DIGIT PUZZLES
+══════════════════════════════════════ -->
+<div class="slide" id="s10">
+  <div class="blob b1"></div>
+  <div class="slide-label">Practice — Missing Digit</div>
+  <h2>Find the missing digit X 🔎</h2>
+  <div class="puzzle-layout">
+    <div class="puzzle-list" id="puzzle-list"></div>
+    <div class="puzzle-panel">
+      <p style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:700;">Puzzle:</p>
+      <div class="puzzle-problem" id="puzzle-problem"></div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:8px;font-style:italic;">Work it out yourself, then click the button below to check.</p>
+      <button class="pill-btn" style="background:var(--yellow);color:var(--dark);align-self:flex-start;margin-top:8px;" onclick="revealPuzzle()">💡 Reveal Answer</button>
+      <div class="puzzle-answer" id="puzzle-answer"></div>
+    </div>
+  </div>
+  <p style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:8px;">💡 Try to work it out yourself first — then hit "Reveal Answer" to check!</p>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 11 — QUIZ
+══════════════════════════════════════ -->
+<div class="slide" id="s11">
+  <div class="blob b1"></div>
+  <div class="slide-label">Knowledge Check</div>
+  <h2>Quiz Time! 🧠</h2>
+  <div class="prog-bar"><div class="prog-fill" id="qprog" style="width:0%"></div></div>
+  <div id="quiz-area">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span class="q-ctr" id="q-ctr">Question 1 of 10</span>
+      <span id="q-diff-badge" class="diff-badge diff-easy">🟢 Warm-Up</span>
+    </div>
+    <div class="quiz-q" id="q-text"></div>
+    <div class="quiz-opts" id="q-opts"></div>
+    <div class="quiz-fb" id="q-fb"></div>
+    <div class="quiz-nav">
+      <button class="pill-btn" style="background:var(--purple);color:white;display:none;" id="q-next" onclick="nextQ()">Next →</button>
+    </div>
+  </div>
+  <div id="quiz-done" style="display:none;text-align:center;padding:20px;">
+    <div style="font-size:52px;margin-bottom:10px;">🎉</div>
+    <h2 style="color:var(--purple);">Quiz Complete!</h2>
+    <p style="font-size:18px;font-weight:800;margin:12px 0;" id="quiz-score"></p>
+    <button class="pill-btn" style="background:var(--purple);color:white;margin-top:10px;" onclick="resetQuiz()">Try Again 🔄</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 12 — FINAL RECAP
+══════════════════════════════════════ -->
+<div class="slide" id="s12">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <h2>You can now test divisibility in seconds! 🌟</h2>
+  <div class="final-grid">
+    <div class="final-card" style="background:rgba(0,129,207,0.15);border:2px solid var(--blue);">
+      <div style="font-size:34px;">🔢</div>
+      <h3>Units Digit Family</h3>
+      <p>Rules for 2, 5, 10, and 100 only need you to look at the last digit (or two).</p>
+    </div>
+    <div class="final-card" style="background:rgba(132,94,194,0.15);border:2px solid var(--purple);">
+      <div style="font-size:34px;">➕</div>
+      <h3>Digit Sum Family</h3>
+      <p>Add all the digits. If that sum is divisible by 3 (or 9), so is the whole number.</p>
+    </div>
+    <div class="final-card" style="background:rgba(255,140,66,0.12);border:2px solid var(--orange);">
+      <div style="font-size:34px;">💪</div>
+      <h3>Powers of 2</h3>
+      <p>Check only the last 2, 3, or 4 digits for rules of 4, 8, and 16.</p>
+    </div>
+    <div class="final-card" style="background:rgba(0,201,167,0.12);border:2px solid var(--teal);">
+      <div style="font-size:34px;">🔀</div>
+      <h3>Combined Rules</h3>
+      <p>6 = 2×3, so check both rules. 12 = 3×4, so check both. Coprime factors combine.</p>
+    </div>
+    <div class="final-card" style="background:rgba(199,125,255,0.12);border:2px solid var(--violet);">
+      <div style="font-size:34px;">🔀</div>
+      <h3>Rule for 11</h3>
+      <p>Alternating digit sum (right to left) must be 0 or ±11.</p>
+    </div>
+    <div class="final-card" style="background:rgba(255,217,61,0.14);border:2px solid var(--yellow);">
+      <div style="font-size:34px;">📅</div>
+      <h3>Next Class</h3>
+      <p>Tuesday 6/24 — homework will be posted soon!</p>
+    </div>
+  </div>
+  <div style="margin-top:16px;background:rgba(255,255,255,0.07);border-radius:14px;padding:12px 22px;max-width:700px;">
+    <p style="font-size:13px;color:rgba(255,255,255,0.75);text-align:center;font-style:italic;">"Mathematics is, in its own way, the poetry of logical ideas…" — Albert Einstein</p>
+  </div>
+  <p style="color:rgba(255,255,255,0.4);margin-top:14px;font-size:12px;">Arrow keys to navigate · Press F for fullscreen</p>
+</div>
+
+</div><!-- end .deck -->
+
+<!-- NAV BAR -->
+<div class="nav">
+  <button onclick="nav(-1)">←</button>
+  <div class="dots" id="dots"></div>
+  <span class="slide-counter" id="ctr">1 / 12</span>
+  <button onclick="nav(1)">→</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  SLIDE ENGINE
+// ═══════════════════════════════════════════════════════
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+let cur = 0;
+slides.forEach((_,i)=>{
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+function goTo(n){
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('out');
+  setTimeout(()=>slides[cur].classList.remove('out'),400);
+  cur = (n + slides.length) % slides.length;
+  slides[cur].classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+  document.getElementById('ctr').textContent = (cur+1)+' / '+slides.length;
+}
+function nav(d){ goTo(cur+d); }
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') nav(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') nav(-1);
+  if(e.key==='f'||e.key==='F') document.documentElement.requestFullscreen?.();
+});
+
+// ═══════════════════════════════════════════════════════
+//  SLIDE 9 — NUMBER INSPECTOR
+// ═══════════════════════════════════════════════════════
+const testNumbers = [
+  { n:48,    label:'48' },
+  { n:840,   label:'840' },
+  { n:396,   label:'396' },
+  { n:715,   label:'715' },
+  { n:9762,  label:'9,762' },
+  { n:841760,label:'841,760' },
+];
+const rules = [2,3,4,5,6,8,9,10,11,16];
+let inspectN = 48;
+let testedRules = {};
+
+function digitSum(n){
+  return String(n).split('').reduce((a,c)=>a+Number(c),0);
+}
+function altSum(n){
+  const d = String(n).split('').map(Number).reverse();
+  return d.reduce((a,c,i)=> a + (i%2===0 ? c : -c), 0);
+}
+function testRule(n, r){
+  switch(r){
+    case 2:{
+      const last = n%10;
+      const pass = last%2===0;
+      return {pass, explain:`Units digit is ${last}. ${pass?last+' is even → ✓ passes rule for 2':'Not even → ✗ fails rule for 2'}`};
+    }
+    case 3:{
+      const s = digitSum(n);
+      const pass = s%3===0;
+      const digits = String(n).split('').join('+');
+      return {pass, explain:`Digit sum: ${digits} = ${s}. ${pass?s+'÷3='+(s/3)+' (whole number) → ✓':s+'÷3 leaves remainder → ✗'}`};
+    }
+    case 4:{
+      const last2 = n%100;
+      const pass = last2%4===0;
+      return {pass, explain:`Last 2 digits: ${last2}. ${pass?last2+'÷4='+(last2/4)+' → ✓':last2+'÷4 = '+Math.floor(last2/4)+' remainder '+(last2%4)+' → ✗'}`};
+    }
+    case 5:{
+      const last = n%10;
+      const pass = last===0||last===5;
+      return {pass, explain:`Units digit is ${last}. ${pass?'Is 0 or 5 → ✓':'Not 0 or 5 → ✗'}`};
+    }
+    case 6:{
+      const div2 = n%2===0;
+      const s = digitSum(n);
+      const div3 = s%3===0;
+      const pass = div2&&div3;
+      return {pass, explain:`Rule 2: units digit ${n%10} → ${div2?'✓ even':'✗ odd'} | Rule 3: digit sum ${s} → ${div3?'✓ divisible by 3':'✗ not divisible by 3'} | Need both → ${pass?'✓ passes':'✗ fails'}`};
+    }
+    case 8:{
+      const last3 = n%1000;
+      const pass = last3%8===0;
+      return {pass, explain:`Last 3 digits: ${last3}. ${pass?last3+'÷8='+(last3/8)+' → ✓':last3+'÷8 = '+Math.floor(last3/8)+' remainder '+(last3%8)+' → ✗'}`};
+    }
+    case 9:{
+      const s = digitSum(n);
+      const pass = s%9===0;
+      const digits = String(n).split('').join('+');
+      return {pass, explain:`Digit sum: ${digits} = ${s}. ${pass?s+'÷9='+(s/9)+' → ✓':s+'÷9 leaves remainder → ✗'}`};
+    }
+    case 10:{
+      const last = n%10;
+      const pass = last===0;
+      return {pass, explain:`Units digit is ${last}. ${pass?'Is 0 → ✓':'Not 0 → ✗'}`};
+    }
+    case 11:{
+      const a = Math.abs(altSum(n));
+      const pass = a===0||a%11===0;
+      const d = String(n).split('').map(Number).reverse();
+      const oddStr = d.filter((_,i)=>i%2===0).join('+');
+      const evenStr = d.filter((_,i)=>i%2!==0).join('+') || '0';
+      const oddSum = d.filter((_,i)=>i%2===0).reduce((a,c)=>a+c,0);
+      const evenSum = d.filter((_,i)=>i%2!==0).reduce((a,c)=>a+c,0);
+      return {pass, explain:`Odd positions (R→L): ${oddStr} = ${oddSum} | Even positions: ${evenStr} = ${evenSum} | |${oddSum}−${evenSum}| = ${a} → ${pass?'0 or multiple of 11 → ✓':'Not 0 or 11 → ✗'}`};
+    }
+    case 16:{
+      const last4 = n%10000;
+      const pass = last4%16===0;
+      return {pass, explain:`Last 4 digits: ${last4}. ${pass?last4+'÷16='+(last4/16)+' → ✓':last4+'÷16 = '+Math.floor(last4/16)+' remainder '+(last4%16)+' → ✗'}`};
+    }
+  }
+}
+
+function buildInspector(){
+  const pickEl = document.getElementById('num-pick');
+  pickEl.innerHTML='';
+  testNumbers.forEach(obj=>{
+    const c = document.createElement('div');
+    c.className = 'num-chip' + (obj.n===inspectN ? ' active':'');
+    c.textContent = obj.label;
+    c.onclick = ()=>{
+      inspectN = obj.n;
+      testedRules = {};
+      document.getElementById('num-display').textContent = obj.label;
+      document.getElementById('inspect-results').innerHTML='<div class="result-row neutral-row"><span class="result-badge">👆</span><span>Click a rule button to test it.</span></div>';
+      buildInspector();
+    };
+    pickEl.appendChild(c);
+  });
+
+  const ctrlEl = document.getElementById('inspect-controls');
+  ctrlEl.innerHTML='';
+  rules.forEach(r=>{
+    const btn = document.createElement('button');
+    const res = testedRules[r];
+    btn.className = 'inspect-btn' + (res ? (res.pass ? ' pass':' fail'):'');
+    btn.textContent = `Rule for ${r}${res ? (res.pass?' ✓':' ✗'):''}`;
+    btn.onclick = ()=>{
+      const result = testRule(inspectN, r);
+      testedRules[r] = result;
+      const resultsEl = document.getElementById('inspect-results');
+      const existing = document.getElementById('result-'+r);
+      const row = document.createElement('div');
+      row.id = 'result-'+r;
+      row.className = 'result-row ' + (result.pass ? 'pass-row':'fail-row');
+      row.innerHTML = `<span class="result-badge">${result.pass?'✅':'❌'}</span><span><strong>Rule for ${r}:</strong> ${result.explain}</span>`;
+      if(existing) resultsEl.replaceChild(row, existing);
+      else {
+        const neutral = resultsEl.querySelector('.neutral-row');
+        if(neutral) neutral.remove();
+        resultsEl.appendChild(row);
+      }
+      buildInspector();
+    };
+    ctrlEl.appendChild(btn);
+  });
+}
+buildInspector();
+
+// ═══════════════════════════════════════════════════════
+//  SLIDE 10 — MISSING DIGIT PUZZLES
+// ═══════════════════════════════════════════════════════
+const puzzles = [
+  {
+    display: 'X649', goal: 'Divisible by 3',
+    label: '▢649', goalShort: 'div by 3',
+    steps: 'Known digits: 6+4+9 = 19.\nFor divisibility by 3, the total digit sum must be a multiple of 3.\n19 ÷ 3 = 6 remainder 1, so we need 1 more to reach 21 (the next multiple of 3).\nTherefore X = 2 (also X = 5 or 8 work — add 3 each time).',
+    answer: 'X = 2 (or 5 or 8) — 2+6+4+9 = 21 = 3×7 ✓'
+  },
+  {
+    display: 'X524321', goal: 'Divisible by 3',
+    label: '▢524321', goalShort: 'div by 3',
+    steps: 'Known digits: 5+2+4+3+2+1 = 17.\nNearest multiple of 3 above 17 is 18.\n18 − 17 = 1, so X = 1.\n(Also X = 4, 7 — adding 3 each time.)',
+    answer: 'X = 1 (or 4 or 7) — 1+5+2+4+3+2+1 = 18 = 3×6 ✓'
+  },
+  {
+    display: '1456X28', goal: 'Divisible by 3',
+    label: '1456▢28', goalShort: 'div by 3',
+    steps: 'Known digits: 1+4+5+6+2+8 = 26.\nNearest multiple of 3 above 26 is 27.\n27 − 26 = 1, so X = 1.\n(Also X = 4, 7.)',
+    answer: 'X = 1 (or 4 or 7) — 1+4+5+6+1+2+8 = 27 = 3×9 ✓'
+  },
+  {
+    display: 'X649', goal: 'Divisible by 9',
+    label: '▢649', goalShort: 'div by 9',
+    steps: 'Known digits: 6+4+9 = 19.\nFor divisibility by 9, the total must be a multiple of 9.\nNearest multiple of 9 ≥ 19 is 27.\n27 − 19 = 8, so X = 8.',
+    answer: 'X = 8 — 8+6+4+9 = 27 = 9×3 ✓'
+  },
+  {
+    display: 'X524321', goal: 'Divisible by 9',
+    label: '▢524321', goalShort: 'div by 9',
+    steps: 'Known digits: 5+2+4+3+2+1 = 17.\nNearest multiple of 9 ≥ 17 is 18.\n18 − 17 = 1, so X = 1.',
+    answer: 'X = 1 — 1+5+2+4+3+2+1 = 18 = 9×2 ✓'
+  },
+  {
+    display: '1456X28', goal: 'Divisible by 9',
+    label: '1456▢28', goalShort: 'div by 9',
+    steps: 'Known digits: 1+4+5+6+2+8 = 26.\nNearest multiple of 9 ≥ 26 is 27.\n27 − 26 = 1, so X = 1.',
+    answer: 'X = 1 — 1+4+5+6+1+2+8 = 27 = 9×3 ✓'
+  },
+];
+let puzzleIdx = 0;
+let revealed = false;
+
+function buildPuzzleList(){
+  const listEl = document.getElementById('puzzle-list');
+  listEl.innerHTML='';
+  puzzles.forEach((p,i)=>{
+    const row = document.createElement('div');
+    row.className = 'puzzle-row' + (i===puzzleIdx ? ' active':'');
+    row.innerHTML = `<div class="p-num">${p.label}</div><div class="p-goal">${p.goalShort}</div>`;
+    row.onclick = ()=>{
+      puzzleIdx = i;
+      revealed = false;
+      document.getElementById('puzzle-answer').textContent='';
+      buildPuzzleList();
+      renderPuzzle();
+    };
+    listEl.appendChild(row);
+  });
+}
+function renderPuzzle(){
+  const p = puzzles[puzzleIdx];
+  const dispHTML = p.display.replace(/X/g, '<span class="x">X</span>');
+  document.getElementById('puzzle-problem').innerHTML = dispHTML;
+  if(!revealed) document.getElementById('puzzle-answer').innerHTML='';
+}
+function revealPuzzle(){
+  revealed = true;
+  const p = puzzles[puzzleIdx];
+  document.getElementById('puzzle-answer').innerHTML =
+    '<div style="font-size:12.5px;color:rgba(255,255,255,0.6);line-height:1.8;white-space:pre-wrap;margin-bottom:8px;">'+p.steps+'</div>' +
+    '<div style="color:var(--teal);font-weight:800;">✅ '+p.answer+'</div>';
+}
+buildPuzzleList();
+renderPuzzle();
+
+// ═══════════════════════════════════════════════════════
+//  SLIDE 11 — QUIZ ENGINE
+// ═══════════════════════════════════════════════════════
+const questions = [
+  // EASY
+  { q:'Mia has 34 stickers. She wants to give the same number to each of her 2 friends with none left over. Can she do it?',
+    opts:['Yes — 34 ends in 4, so it is even and divides evenly by 2','No — 34 ends in 4, which is odd','No — 34 is too big to split evenly','Yes — any number with a 3 in it is divisible by 2'], ans:0,
+    diff:'easy', exp:'The rule for 2: if the last digit is 0, 2, 4, 6, or 8 the number is even. 34 ends in 4, so 34÷2=17 exactly. Mia gives 17 stickers to each friend!' },
+  { q:"Jake has 45 toy cars. He wants to sort them into equal groups of 5. Will every car fit in a group with none left over?",
+    opts:['No — 45 ends in 5, not 0, so it is not divisible by 5','Yes — 45 ends in 5, which passes the rule for 5','No — 45 is odd so it cannot be split into groups','Yes — any number bigger than 40 is divisible by 5'], ans:1,
+    diff:'easy', exp:'The rule for 5: the last digit must be 0 or 5. 45 ends in 5, so 45÷5=9 groups exactly. Every car fits!' },
+  { q:'Is 96 divisible by 3?',
+    opts:['No — 96 is even, not odd','Yes — 9+6=15, and 15 is divisible by 3','No — 9+6=15, and 15 is not divisible by 3','Yes — all two-digit numbers are divisible by 3'], ans:1,
+    diff:'easy', exp:'The rule for 3: add the digits. 9+6=15, and 15÷3=5 with no remainder, so yes — 96 is divisible by 3.' },
+  // MEDIUM
+  { q:'A pizza shop made 132 slices of pizza. They want to put exactly 3 slices on each plate. Will every slice fit on a plate with none left over?',
+    opts:['No — 132 is not divisible by 3','Yes — 1+3+2=6, and 6 is divisible by 3, so 132÷3=44 plates exactly','No — only odd numbers are divisible by 3','Yes — because 132 ends in 2'], ans:1,
+    diff:'medium', exp:'Add the digits: 1+3+2=6. Since 6÷3=2 with no remainder, 132 is divisible by 3. That fills 44 plates perfectly!' },
+  { q:'Sam has 48 marbles and wants to put them into bags of 6 with none left over. Is that possible?',
+    opts:['No — 48 is not divisible by 6','Yes — 48 is even AND 4+8=12 is divisible by 3, so 48÷6=8 bags exactly','Yes — because 48 ends in 8','No — 6 only divides into multiples of 10'], ans:1,
+    diff:'medium', exp:'To divide by 6 you need BOTH rules to pass: even (48 ends in 8 ✓) AND digit sum divisible by 3 (4+8=12 ✓). Both pass, so 48÷6=8 bags.' },
+  { q:'Is 48 divisible by 6? Choose the best explanation.',
+    opts:['No — 48 is not divisible by 3','Yes — 48 is even (rule for 2 ✓) and 4+8=12 is divisible by 3 (rule for 3 ✓)','Yes — just because 48 is even','No — 6 does not divide into 40'], ans:1,
+    diff:'medium', exp:'Divisibility by 6 requires BOTH rules to pass: even (÷2) AND digit sum divisible by 3. Both are true for 48, so 48÷6=8 exactly.' },
+  { q:'Which rule correctly describes divisibility by 11?',
+    opts:['Units digit must be 1 or 0','All digits add up to a multiple of 11','The absolute difference between the sum of odd-position and even-position digits (right-to-left) must be 0 or 11','The last two digits must be divisible by 11'], ans:2,
+    diff:'medium', exp:'For 11: alternating sum from the right. Subtract even-position digit sums from odd-position digit sums. If |difference| is 0 or 11, it\'s divisible by 11.' },
+  // HARD
+  { q:'Which missing digit X makes X649 divisible by 3?',
+    opts:['X = 1  (1+6+4+9 = 20)','X = 2  (2+6+4+9 = 21)','X = 3  (3+6+4+9 = 22)','X = 6  (6+6+4+9 = 25)'], ans:1,
+    diff:'hard', exp:'Known digits sum to 6+4+9=19. We need 19+X to be a multiple of 3. 19+2=21=3×7. So X=2 works (also X=5 and X=8).' },
+  { q:"Farmer Brown's hens laid 9,762 eggs. Can they be packed into cartons of exactly 12 (one dozen) with none left over?",
+    opts:['Yes — 9762 is divisible by 12','No — 9762 is divisible by 3 but NOT by 4: last two digits 62÷4 leaves a remainder','Yes — any even number is divisible by 12','No — 9762 is not divisible by 3'], ans:1,
+    diff:'hard', exp:'12=3×4. Digit sum 9+7+6+2=24, so ÷3 ✓. But last two digits: 62÷4=15 remainder 2, so ÷4 ✗. Both rules must pass — they don\'t, so 9762 cannot be packed evenly into dozens.' },
+  { q:'A baker made 315 cookies and wants to pack them into equal-sized boxes with no cookies left over. Which box size works?',
+    opts:['Boxes of 4 — last 2 digits: 15÷4 leaves a remainder','Boxes of 5 — units digit is 5, so 315÷5=63 exactly','Boxes of 8 — 315÷8 leaves a remainder','Boxes of 10 — units digit is 5, not 0'], ans:1,
+    diff:'medium', exp:'315 ends in 5, so it passes the rule for 5. 315÷5=63 exactly. Boxes of 4, 8, and 10 all fail their divisibility tests.' },
+];
+
+let qIdx=0, score=0, answered=false;
+function renderQ(){
+  const q = questions[qIdx];
+  document.getElementById('q-text').innerHTML = q.q;
+  document.getElementById('q-ctr').textContent = 'Question '+(qIdx+1)+' of '+questions.length;
+  document.getElementById('qprog').style.width = (qIdx/questions.length*100)+'%';
+  document.getElementById('q-fb').textContent = '';
+  document.getElementById('q-next').style.display = 'none';
+  answered = false;
+  const badge = document.getElementById('q-diff-badge');
+  badge.className = 'diff-badge diff-'+q.diff;
+  badge.textContent = q.diff==='easy' ? '🟢 Warm-Up' : q.diff==='medium' ? '🟡 Getting Harder' : '🔴 Challenge';
+  const opts = document.getElementById('q-opts');
+  opts.innerHTML = '';
+  q.opts.forEach((opt,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = opt;
+    btn.onclick = () => answer(i, btn);
+    opts.appendChild(btn);
+  });
+}
+function answer(i, btn){
+  if(answered) return;
+  answered = true;
+  const correct = questions[qIdx].ans;
+  document.querySelectorAll('.quiz-opt').forEach((b,idx)=>{
+    if(idx===correct) b.classList.add('correct');
+    else b.classList.add('wrong');
+    b.disabled = true;
+  });
+  const fb = document.getElementById('q-fb');
+  if(i===correct){
+    score++;
+    fb.innerHTML = '🎉 Correct! <span style="font-weight:600;font-size:12.5px;">'+questions[qIdx].exp+'</span>';
+  } else {
+    fb.innerHTML = '❌ Not quite. <span style="font-weight:600;font-size:12.5px;">'+questions[qIdx].exp+'</span>';
+  }
+  document.getElementById('q-next').style.display = 'inline-block';
+}
+function nextQ(){
+  qIdx++;
+  if(qIdx >= questions.length){
+    document.getElementById('quiz-area').style.display = 'none';
+    document.getElementById('quiz-done').style.display = 'block';
+    document.getElementById('qprog').style.width = '100%';
+    const pct = Math.round(score/questions.length*100);
+    document.getElementById('quiz-score').textContent =
+      `You got ${score} out of ${questions.length} (${pct}%) ${pct>=90?'🌟 Outstanding!':pct>=70?'👍 Well done!':pct>=50?'💪 Keep practicing!':'📖 Review the slides and try again!'}`;
+  } else renderQ();
+}
+function resetQuiz(){
+  qIdx=0; score=0;
+  document.getElementById('quiz-area').style.display='block';
+  document.getElementById('quiz-done').style.display='none';
+  renderQ();
+}
+renderQ();
+</script>
+</body>
+</html>
