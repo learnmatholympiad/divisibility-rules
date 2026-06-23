@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 01 – Percentages</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fira+Code:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow:#FFD93D; --orange:#FF8C42; --pink:#FF6B9D; --purple:#845EC2;
+  --blue:#0081CF; --teal:#00C9A7; --green:#4CAF50; --red:#E84040;
+  --lime:#A8E063; --cyan:#38BDF8; --violet:#C77DFF;
+  --bg:#FFFBF0; --dark:#1A1333; --card:#FFFFFF;
+  --text:#1A1333; --muted:#6B6880;
+  --radius:16px; --shadow:0 6px 28px rgba(26,19,51,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
+
+/* ── SLIDE SYSTEM ── */
+.deck{width:100vw;height:100vh;position:relative;}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:32px 52px 88px;opacity:0;pointer-events:none;transition:opacity .35s ease,transform .35s ease;transform:translateX(60px);}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0);}
+.slide.out{opacity:0;transform:translateX(-60px);}
+
+/* ── NAV ── */
+.nav{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:var(--dark);border-radius:999px;padding:9px 18px;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,0.28);}
+.nav button{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:4px 10px;border-radius:999px;transition:background .15s;font-family:'Nunito',sans-serif;}
+.nav button:hover{background:rgba(255,255,255,0.12);}
+.nav .slide-counter{color:rgba(255,255,255,0.6);font-size:12px;font-weight:800;min-width:56px;text-align:center;letter-spacing:.04em;}
+.nav .dots{display:flex;gap:5px;}
+.nav .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.22);transition:background .2s,transform .2s;cursor:pointer;}
+.nav .dot.active{background:var(--yellow);transform:scale(1.35);}
+
+/* ── TYPOGRAPHY ── */
+.slide-label{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;opacity:.5;}
+h1{font-size:clamp(26px,4.2vw,52px);font-weight:900;line-height:1.1;}
+h2{font-size:clamp(18px,2.6vw,34px);font-weight:900;line-height:1.2;margin-bottom:12px;}
+h3{font-size:15px;font-weight:800;margin-bottom:4px;}
+p,li{font-size:clamp(13px,1.5vw,15px);line-height:1.6;color:var(--text);}
+
+/* ── UTILITIES ── */
+.tag{display:inline-block;padding:3px 12px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.06em;}
+.tag-yellow{background:var(--yellow);color:var(--dark);}
+.tag-blue{background:var(--blue);color:#fff;}
+.tag-pink{background:var(--pink);color:#fff;}
+.tag-teal{background:var(--teal);color:var(--dark);}
+.tag-purple{background:var(--purple);color:#fff;}
+.tag-orange{background:var(--orange);color:#fff;}
+.tag-lime{background:var(--lime);color:var(--dark);}
+.tag-cyan{background:var(--cyan);color:var(--dark);}
+.tag-violet{background:var(--violet);color:#fff;}
+.card{background:var(--card);border-radius:var(--radius);padding:16px 20px;box-shadow:var(--shadow);}
+.pill-btn{display:inline-block;padding:8px 18px;border-radius:999px;border:none;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:transform .12s,box-shadow .12s;}
+.pill-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.15);}
+.pill-btn:active{transform:scale(0.97);}
+code,.mono{font-family:'Fira Code',monospace;background:#F0EBF8;border-radius:6px;padding:1px 7px;font-size:.88em;color:var(--purple);}
+.blob{position:absolute;border-radius:50%;filter:blur(65px);opacity:.18;pointer-events:none;z-index:0;}
+.slide>*{position:relative;z-index:1;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.recap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;}
+.recap-chip{background:white;border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);border-left:4px solid;display:flex;flex-direction:column;gap:6px;}
+.tri-row{display:flex;gap:14px;margin-top:10px;flex:1;}
+.tri-card{flex:1;background:white;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid;display:flex;flex-direction:column;gap:8px;}
+
+/* ══ S1 TITLE ══ */
+#s1{background:linear-gradient(135deg,#FFF8E1 0%,#FFF0E8 50%,#E8FFF5 100%);justify-content:center;}
+#s1 .b1{width:420px;height:420px;background:var(--orange);top:-110px;right:-90px;}
+#s1 .b2{width:300px;height:300px;background:var(--teal);bottom:-70px;left:-70px;}
+#s1 h1 em{color:var(--orange);font-style:normal;}
+
+/* ══ S2 WHAT IS PERCENT ══ */
+#s2{background:#FFF8E1;}
+#s2 .b1{width:280px;height:280px;background:var(--yellow);top:-60px;right:-60px;}
+.conv-table{width:100%;border-collapse:separate;border-spacing:0 8px;}
+.conv-table th{text-align:left;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 14px 4px;}
+.conv-table td{padding:11px 14px;background:white;font-size:14px;vertical-align:middle;}
+.conv-table tr td:first-child{border-radius:10px 0 0 10px;font-weight:900;font-size:20px;color:var(--orange);}
+.conv-table tr td:last-child{border-radius:0 10px 10px 0;}
+.conv-table tr td:nth-child(2){font-weight:700;}
+
+/* ══ S3 FINDING X% ══ */
+#s3{background:linear-gradient(135deg,#FFFBF0 0%,#F0FFF8 100%);}
+#s3 .b1{width:300px;height:300px;background:var(--teal);top:-70px;right:-70px;}
+.formula-box{background:white;border-radius:var(--radius);padding:18px 24px;box-shadow:var(--shadow);border-left:6px solid var(--teal);margin:12px 0;}
+.formula-box .formula{font-family:'Fira Code',monospace;font-size:clamp(15px,2vw,20px);font-weight:700;color:var(--dark);}
+.formula-box .formula em{color:var(--teal);font-style:normal;}
+
+/* ══ S4 DECREASE ══ */
+#s4{background:#FFF0E8;}
+#s4 .b1{width:280px;height:280px;background:var(--orange);bottom:-60px;left:-60px;}
+
+/* ══ S5 INCREASE ══ */
+#s5{background:#E8FFF5;}
+#s5 .b1{width:280px;height:280px;background:var(--teal);top:-60px;right:-60px;}
+
+/* ══ S6 COMPARE ══ */
+#s6{background:#F5F0FF;}
+#s6 .b1{width:280px;height:280px;background:var(--purple);bottom:-60px;left:-60px;}
+.vs-card{flex:1;background:white;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border-top:4px solid;display:flex;flex-direction:column;gap:10px;}
+.step-row{font-size:13px;display:flex;gap:8px;align-items:flex-start;line-height:1.5;}
+.step-num{font-family:'Fira Code',monospace;font-weight:700;font-size:11px;background:#F0EBF8;border-radius:6px;padding:1px 7px;color:var(--purple);flex-shrink:0;margin-top:2px;}
+
+/* ══ S7 WORD PROBLEMS ══ */
+#s7{background:#FFF8E1;}
+#s7 .b1{width:280px;height:280px;background:var(--yellow);top:-60px;left:-60px;}
+.wp-card{background:white;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-left:5px solid;display:flex;flex-direction:column;gap:8px;}
+.wp-q{font-size:13px;font-weight:700;line-height:1.5;}
+.wp-ans{font-size:13px;color:var(--teal);font-weight:800;}
+.wp-steps{font-size:12px;color:var(--muted);line-height:1.7;}
+
+/* ══ S8 CALCULATOR INTERACTIVE ══ */
+#s8{background:var(--dark);color:white;}
+#s8 h2{color:white;}#s8 .slide-label{opacity:.5;}
+.calc-chips{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px;}
+.calc-chip{padding:8px 14px;border-radius:12px;border:2px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);color:white;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all .2s;}
+.calc-chip:hover{border-color:var(--yellow);background:rgba(255,217,61,0.08);}
+.calc-chip.selected{border-color:var(--yellow);background:rgba(255,217,61,0.15);color:var(--yellow);}
+.calc-label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:4px;}
+.calc-stage{background:#120f24;border-radius:16px;padding:20px 24px;flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center;}
+.calc-placeholder{font-size:13px;color:rgba(255,255,255,0.3);text-align:center;padding:20px;}
+.calc-step{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.8;display:flex;gap:10px;align-items:baseline;}
+.calc-step .step-label{font-family:'Fira Code',monospace;font-size:10px;background:rgba(255,255,255,0.08);border-radius:6px;padding:2px 8px;color:rgba(255,255,255,0.5);flex-shrink:0;}
+.calc-step strong{color:var(--yellow);}
+.calc-answer{font-size:clamp(18px,2.5vw,26px);font-weight:900;color:var(--teal);margin-top:6px;}
+.calc-type{font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;}
+
+/* ══ S9 PRACTICE INTERACTIVE ══ */
+#s9{background:#1A1333;color:white;}
+#s9 h2{color:white;}#s9 .slide-label{opacity:.5;}
+.practice-layout{display:flex;gap:16px;flex:1;margin-top:8px;}
+.practice-list{min-width:200px;display:flex;flex-direction:column;gap:8px;}
+.practice-row{background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.08);border-radius:12px;padding:9px 12px;cursor:pointer;transition:all .15s;}
+.practice-row:hover{border-color:rgba(255,255,255,0.25);}
+.practice-row.active{border-color:var(--yellow);background:rgba(255,217,61,0.08);}
+.practice-row .p-q{font-size:12.5px;font-weight:700;}
+.practice-panel{flex:1;background:#0E0B1E;border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;}
+.p-problem{font-family:'Fira Code',monospace;font-size:clamp(18px,2.5vw,28px);font-weight:700;color:var(--yellow);}
+.p-steps{font-size:13px;color:rgba(255,255,255,0.55);line-height:1.9;white-space:pre-wrap;min-height:70px;}
+.p-answer{font-size:15px;font-weight:800;color:var(--teal);min-height:20px;}
+
+/* ══ S10 BRAIN TEASER ══ */
+#s10{background:linear-gradient(135deg,#F5F0FF 0%,#FFF0F5 100%);}
+#s10 .b1{width:280px;height:280px;background:var(--purple);top:-60px;right:-60px;}
+.teaser-box{background:white;border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);border-top:5px solid var(--purple);margin:10px 0;}
+
+/* ══ S11 QUIZ ══ */
+#s11{background:#FFF8E1;}
+#s11 .b1{width:260px;height:260px;background:var(--orange);top:-60px;right:-60px;}
+.quiz-q{font-size:clamp(13px,1.9vw,17px);font-weight:800;margin-bottom:14px;line-height:1.4;}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.quiz-opt{padding:11px 14px;border-radius:14px;border:2.5px solid #ddd;background:white;font-family:'Nunito',sans-serif;font-weight:700;font-size:12.5px;cursor:pointer;text-align:left;transition:all .18s;box-shadow:var(--shadow);line-height:1.4;}
+.quiz-opt:hover:not([disabled]){border-color:var(--orange);transform:translateY(-2px);}
+.quiz-opt.correct{border-color:var(--teal);background:#E8FBF4;color:#0F6E56;}
+.quiz-opt.wrong{border-color:var(--red);background:#FFF0F0;color:#A32D2D;}
+.quiz-fb{min-height:50px;font-size:13px;font-weight:700;padding-top:10px;display:flex;align-items:center;gap:8px;line-height:1.4;}
+.quiz-nav{display:flex;align-items:center;gap:12px;margin-top:8px;}
+.q-ctr{font-size:12px;font-weight:700;color:var(--muted);}
+.prog-bar{height:6px;background:#FFE9B0;border-radius:3px;margin-bottom:12px;}
+.prog-fill{height:100%;background:var(--orange);border-radius:3px;transition:width .4s;}
+.diff-badge{font-size:10px;font-weight:800;padding:2px 9px;border-radius:999px;letter-spacing:.06em;}
+.diff-easy{background:#E8FBF4;color:#0F6E56;}
+.diff-medium{background:#FFF8E1;color:#8B5E00;}
+.diff-hard{background:#FFF0F0;color:#A32D2D;}
+
+/* ══ S12 FINAL ══ */
+#s12{background:var(--dark);color:white;justify-content:center;align-items:center;text-align:center;}
+#s12 .b1{width:360px;height:360px;background:var(--orange);top:-100px;left:-100px;}
+#s12 .b2{width:300px;height:300px;background:var(--teal);bottom:-80px;right:-80px;}
+#s12 h2{color:white;font-size:clamp(22px,3.2vw,40px);}
+.final-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;width:100%;max-width:840px;}
+.final-card{border-radius:var(--radius);padding:16px 14px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;}
+.final-card h3{font-size:13px;color:white;}
+.final-card p{font-size:11px;color:rgba(255,255,255,0.55);line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- ══════════════════════════════════════
+     SLIDE 1 — TITLE
+══════════════════════════════════════ -->
+<div class="slide active" id="s1">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+    <span class="tag tag-orange">Lesson 01</span>
+    <span class="tag tag-teal">6th Grade Math</span>
+    <span class="tag tag-yellow">New Topic</span>
+  </div>
+  <h1><em>Percentages</em> %</h1>
+  <p style="font-size:clamp(14px,1.8vw,19px);color:var(--muted);margin-top:14px;font-weight:600;">Understanding what percentages mean, how to calculate them, and how they show up in everyday life</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;">
+    <span class="tag tag-orange">✦ What is a Percent?</span>
+    <span class="tag tag-teal">✦ Finding X% of N</span>
+    <span class="tag tag-lime">✦ Increase &amp; Decrease</span>
+    <span class="tag tag-blue">✦ Word Problems</span>
+    <span class="tag tag-purple">✦ Quiz</span>
+  </div>
+  <div style="margin-top:26px;background:white;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);display:inline-flex;gap:12px;align-items:center;max-width:600px;">
+    <span style="font-size:22px;">💡</span>
+    <p style="font-size:13px;"><strong>Big idea:</strong> "per cent" means <strong>per hundred</strong>. So 67% is just a shorthand for the fraction 67/100 — or the decimal 0.67.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 2 — WHAT IS A PERCENT?
+══════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 1 — The Big Idea</div>
+  <h2>What is a percent? %</h2>
+  <p style="font-size:13px;margin-bottom:12px;">A percentage is a number <strong>out of 100</strong>. The symbol <strong>%</strong> means "divided by 100."</p>
+  <table class="conv-table">
+    <tr><th>Percent</th><th>Fraction</th><th>Decimal</th><th>In words</th></tr>
+    <tr><td style="color:var(--orange);">10%</td><td>10/100 = <strong>1/10</strong></td><td><strong>0.10</strong></td><td>One tenth</td></tr>
+    <tr><td style="color:var(--teal);">25%</td><td>25/100 = <strong>1/4</strong></td><td><strong>0.25</strong></td><td>One quarter</td></tr>
+    <tr><td style="color:var(--purple);">50%</td><td>50/100 = <strong>1/2</strong></td><td><strong>0.50</strong></td><td>One half</td></tr>
+    <tr><td style="color:var(--blue);">67%</td><td>67/100</td><td><strong>0.67</strong></td><td>67 out of 100</td></tr>
+    <tr><td style="color:var(--pink);">100%</td><td>100/100 = <strong>1</strong></td><td><strong>1.00</strong></td><td>The whole thing</td></tr>
+  </table>
+  <div style="margin-top:14px;background:var(--yellow);border-radius:12px;padding:10px 16px;">
+    <p style="font-size:13px;color:var(--dark);"><strong>🔑 Rule:</strong> <code>X% = X ÷ 100 = 0.0X</code>. To convert any percent to a decimal, just move the decimal point two places to the left.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 3 — FINDING X% OF N
+══════════════════════════════════════ -->
+<div class="slide" id="s3">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 1 — The Formula</div>
+  <h2>How to find X% of a number 🔢</h2>
+  <div class="formula-box">
+    <div class="formula"><em>X</em>% of <em>N</em>  =  N × (<em>X</em> / 100)  =  N × <em>decimal</em></div>
+  </div>
+  <div class="tri-row" style="margin-top:10px;">
+    <div class="tri-card" style="border-color:var(--orange);">
+      <div style="font-size:22px;">📌</div>
+      <h3>Example 1</h3>
+      <p style="font-size:13px;">20% of 55</p>
+      <div style="background:#FFF0E8;border-radius:10px;padding:9px 12px;margin-top:6px;font-family:'Fira Code',monospace;font-size:13px;line-height:1.9;">
+        <p>20% = 20/100 = <strong>0.2</strong></p>
+        <p>0.2 × 55 = <strong style="color:var(--orange);">11</strong></p>
+        <p style="font-size:11px;color:var(--muted);">= ⅕ × 55 = 11 ✓</p>
+      </div>
+    </div>
+    <div class="tri-card" style="border-color:var(--teal);">
+      <div style="font-size:22px;">📌</div>
+      <h3>Example 2</h3>
+      <p style="font-size:13px;">25% of 84</p>
+      <div style="background:#E8FBF4;border-radius:10px;padding:9px 12px;margin-top:6px;font-family:'Fira Code',monospace;font-size:13px;line-height:1.9;">
+        <p>25% = 25/100 = <strong>0.25</strong></p>
+        <p>0.25 × 84 = <strong style="color:var(--teal);">21</strong></p>
+        <p style="font-size:11px;color:var(--muted);">= ¼ × 84 = 21 ✓</p>
+      </div>
+    </div>
+    <div class="tri-card" style="border-color:var(--purple);">
+      <div style="font-size:22px;">📌</div>
+      <h3>Example 3</h3>
+      <p style="font-size:13px;">40% of 80</p>
+      <div style="background:#F5F0FF;border-radius:10px;padding:9px 12px;margin-top:6px;font-family:'Fira Code',monospace;font-size:13px;line-height:1.9;">
+        <p>40% = 40/100 = <strong>0.4</strong></p>
+        <p>0.4 × 80 = <strong style="color:var(--purple);">32</strong></p>
+        <p style="font-size:11px;color:var(--muted);">= ⅖ × 80 = 32 ✓</p>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:12px;background:white;border-radius:14px;padding:11px 16px;box-shadow:var(--shadow);">
+    <p style="font-size:13px;"><strong>💡 Tip:</strong> Always convert the % to a decimal first by dividing by 100, then multiply. It works every time, for any number.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 4 — PERCENTAGE DECREASE
+══════════════════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 2 — Going Down</div>
+  <h2>Percentage Decrease 📉</h2>
+  <div class="tri-row">
+    <div class="tri-card" style="border-color:var(--orange);flex:1.3;">
+      <div style="font-size:24px;">📉</div>
+      <h3>What is it?</h3>
+      <p style="font-size:13px;">When a number is multiplied by a percentage <strong>below 100%</strong>, the result is <em>smaller</em> than the original. The number decreases.</p>
+      <div style="background:#FFF0E8;border-radius:10px;padding:10px 12px;margin-top:8px;">
+        <p style="font-size:13px;font-weight:700;">50% of 30</p>
+        <p style="font-family:'Fira Code',monospace;font-size:13px;margin-top:4px;">= 0.5 × 30 = <strong style="color:var(--orange);">15</strong></p>
+        <p style="font-size:12px;color:var(--muted);margin-top:2px;">30 → 15 (got smaller ✓)</p>
+      </div>
+    </div>
+    <div class="tri-card" style="border-color:var(--blue);flex:1.7;">
+      <div style="font-size:24px;">🛒</div>
+      <h3>Real-world example — a sale!</h3>
+      <p style="font-size:13px;">A jacket costs <strong>$80</strong>. It is <strong>25% off</strong>.</p>
+      <div style="background:#E8F5FF;border-radius:10px;padding:10px 12px;margin-top:8px;font-family:'Fira Code',monospace;font-size:13px;line-height:2;">
+        <p>Discount = 25% of $80</p>
+        <p>= 0.25 × 80 = <strong>$20</strong></p>
+        <p>New price = $80 − $20 = <strong style="color:var(--blue);">$60</strong></p>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:14px;background:var(--yellow);border-radius:12px;padding:10px 16px;">
+    <p style="font-size:13px;color:var(--dark);"><strong>🔑 Key idea:</strong> any percentage <strong>under 100%</strong> gives you a piece of the original. The lower the %, the smaller the result.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 5 — PERCENTAGE INCREASE
+══════════════════════════════════════ -->
+<div class="slide" id="s5">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 2 — Going Up</div>
+  <h2>Percentage Increase 📈</h2>
+  <div class="tri-row">
+    <div class="tri-card" style="border-color:var(--teal);flex:1.3;">
+      <div style="font-size:24px;">📈</div>
+      <h3>What is it?</h3>
+      <p style="font-size:13px;">When a number is multiplied by a percentage <strong>above 100%</strong>, the result is <em>larger</em> than the original. The number increases.</p>
+      <div style="background:#E8FBF4;border-radius:10px;padding:10px 12px;margin-top:8px;">
+        <p style="font-size:13px;font-weight:700;">150% of 30</p>
+        <p style="font-family:'Fira Code',monospace;font-size:13px;margin-top:4px;">= 1.5 × 30 = <strong style="color:var(--teal);">45</strong></p>
+        <p style="font-size:12px;color:var(--muted);margin-top:2px;">30 → 45 (got bigger ✓)</p>
+      </div>
+    </div>
+    <div class="tri-card" style="border-color:var(--green);flex:1.7;">
+      <div style="font-size:24px;">💰</div>
+      <h3>Real-world example — a raise!</h3>
+      <p style="font-size:13px;">A worker earns <strong>$40/hour</strong>. They get a <strong>20% raise</strong>.</p>
+      <div style="background:#E8F5E8;border-radius:10px;padding:10px 12px;margin-top:8px;font-family:'Fira Code',monospace;font-size:13px;line-height:2;">
+        <p>Raise = 20% of $40</p>
+        <p>= 0.20 × 40 = <strong>$8</strong></p>
+        <p>New wage = $40 + $8 = <strong style="color:var(--green);">$48</strong></p>
+        <p style="font-size:11px;color:var(--muted);">Or: 120% of $40 = 1.2 × 40 = $48 ✓</p>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:14px;background:var(--yellow);border-radius:12px;padding:10px 16px;">
+    <p style="font-size:13px;color:var(--dark);"><strong>🔑 Key idea:</strong> any percentage <strong>over 100%</strong> gives you more than the original. 150% means the original <em>plus</em> half again.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 6 — DECREASE VS INCREASE
+══════════════════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 2 — Side by Side</div>
+  <h2>Decrease vs. Increase — same number, different % 🔀</h2>
+  <p style="font-size:13px;margin-bottom:12px;">Starting from <strong>100</strong>. Watch what happens with different percentages:</p>
+  <div style="display:flex;gap:14px;flex:1;">
+    <div class="vs-card" style="border-color:var(--orange);">
+      <h3>📉 Percentage Decrease</h3>
+      <div class="step-row"><span class="step-num">50%</span><p>0.5 × 100 = <strong style="color:var(--orange);">50</strong> &nbsp;(lost half)</p></div>
+      <div class="step-row"><span class="step-num">25%</span><p>0.25 × 100 = <strong style="color:var(--orange);">25</strong> &nbsp;(lost ¾)</p></div>
+      <div class="step-row"><span class="step-num">10%</span><p>0.1 × 100 = <strong style="color:var(--orange);">10</strong> &nbsp;(only kept 10)</p></div>
+      <div style="background:#FFF0E8;border-radius:10px;padding:8px 12px;margin-top:4px;">
+        <p style="font-size:12px;color:var(--muted);">Any % <strong>below 100</strong> makes the number smaller.</p>
+      </div>
+    </div>
+    <div class="vs-card" style="border-color:var(--teal);">
+      <h3>↔️ 100% (no change)</h3>
+      <div class="step-row"><span class="step-num">100%</span><p>1.0 × 100 = <strong>100</strong> &nbsp;(exactly the same)</p></div>
+      <div style="background:#E8FBF4;border-radius:10px;padding:8px 12px;margin-top:4px;">
+        <p style="font-size:12px;color:var(--muted);">100% of any number is just that number.</p>
+      </div>
+    </div>
+    <div class="vs-card" style="border-color:var(--teal);">
+      <h3>📈 Percentage Increase</h3>
+      <div class="step-row"><span class="step-num">110%</span><p>1.1 × 100 = <strong style="color:var(--teal);">110</strong> &nbsp;(grew 10%)</p></div>
+      <div class="step-row"><span class="step-num">150%</span><p>1.5 × 100 = <strong style="color:var(--teal);">150</strong> &nbsp;(grew 50%)</p></div>
+      <div class="step-row"><span class="step-num">200%</span><p>2.0 × 100 = <strong style="color:var(--teal);">200</strong> &nbsp;(doubled!)</p></div>
+      <div style="background:#E8FBF4;border-radius:10px;padding:8px 12px;margin-top:4px;">
+        <p style="font-size:12px;color:var(--muted);">Any % <strong>above 100</strong> makes the number bigger.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 7 — WORD PROBLEMS
+══════════════════════════════════════ -->
+<div class="slide" id="s7">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 3 — Putting It Together</div>
+  <h2>Word Problems 📝</h2>
+  <div class="grid2" style="flex:1;gap:14px;margin-top:8px;">
+    <div class="wp-card" style="border-color:var(--blue);">
+      <span class="tag tag-blue" style="align-self:flex-start;">Problem 1</span>
+      <p class="wp-q">2% of the students at Hamilton Middle School have red hair. There are 700 students. How many students have red hair?</p>
+      <div style="background:#E8F5FF;border-radius:10px;padding:10px 12px;margin-top:4px;">
+        <p class="wp-steps">Step 1: 2% = 0.02
+Step 2: 0.02 × 700 = <strong>14</strong></p>
+        <p class="wp-ans">✅ 14 students have red hair.</p>
+      </div>
+    </div>
+    <div class="wp-card" style="border-color:var(--purple);">
+      <span class="tag tag-purple" style="align-self:flex-start;">Problem 2</span>
+      <p class="wp-q">There are 25 students in Ms. Nguyen's class. 4 voted for Benjamin, 12 for Sahil, 9 for Maria. What percentage voted for Maria?</p>
+      <div style="background:#F5F0FF;border-radius:10px;padding:10px 12px;margin-top:4px;">
+        <p class="wp-steps">Step 1: Maria got 9 out of 25 votes
+Step 2: 9 ÷ 25 = 0.36
+Step 3: 0.36 × 100 = <strong>36%</strong></p>
+        <p class="wp-ans">✅ Maria got 36% of the votes.</p>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:12px;background:var(--yellow);border-radius:12px;padding:10px 16px;">
+    <p style="font-size:13px;color:var(--dark);"><strong>📐 Finding a percentage:</strong> divide the part by the whole, then multiply by 100. <code>(part ÷ whole) × 100 = %</code></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 8 — CALCULATOR INTERACTIVE
+══════════════════════════════════════ -->
+<div class="slide" id="s8">
+  <div class="slide-label">Try It — Percentage Calculator</div>
+  <h2>Pick a % and a number. See the work. ⚡</h2>
+  <div style="display:flex;gap:24px;margin-top:8px;">
+    <div style="min-width:180px;">
+      <div class="calc-label">Choose a %</div>
+      <div class="calc-chips" id="pct-chips" style="flex-direction:column;gap:6px;"></div>
+    </div>
+    <div style="min-width:160px;">
+      <div class="calc-label">Choose a number</div>
+      <div class="calc-chips" id="num-chips" style="flex-direction:column;gap:6px;"></div>
+    </div>
+    <div class="calc-stage" style="flex:1;">
+      <div id="calc-result"><div class="calc-placeholder">👆 Pick a percentage and a number to see the calculation.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 9 — PRACTICE PROBLEMS
+══════════════════════════════════════ -->
+<div class="slide" id="s9">
+  <div class="slide-label">Practice — Click to Solve</div>
+  <h2>Work through the practice problems 🧮</h2>
+  <div class="practice-layout">
+    <div class="practice-list" id="practice-list"></div>
+    <div class="practice-panel">
+      <p style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:700;">Problem:</p>
+      <div class="p-problem" id="p-problem"></div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:6px;font-style:italic;">Try it yourself, then reveal the solution.</p>
+      <button class="pill-btn" style="background:var(--yellow);color:var(--dark);align-self:flex-start;margin-top:8px;" onclick="revealPractice()">💡 Reveal Solution</button>
+      <div class="p-answer" id="p-answer"></div>
+    </div>
+  </div>
+  <p style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:8px;">💡 Note: practice problem #5 in some versions shows an incorrect answer — the correct answer is 18.</p>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 10 — BRAIN TEASER
+══════════════════════════════════════ -->
+<div class="slide" id="s10">
+  <div class="blob b1"></div>
+  <div class="slide-label">Challenge — Think It Through</div>
+  <h2>Challenge Word Problems 🧠</h2>
+  <div class="grid2" style="flex:1;gap:14px;margin-top:8px;">
+    <div class="teaser-box" style="border-color:var(--purple);display:flex;flex-direction:column;gap:10px;">
+      <span class="tag tag-purple" style="align-self:flex-start;">Challenge 1</span>
+      <p style="font-size:13px;font-weight:700;line-height:1.5;">A number is increased by 20%, then decreased by 20%. Is the final number equal to the original? If not, what is it?</p>
+      <div style="background:#F5F0FF;border-radius:10px;padding:10px 14px;font-family:'Fira Code',monospace;font-size:12.5px;line-height:2;">
+        <p>Start: <strong>100</strong></p>
+        <p>+20%: 100 × 1.2 = <strong>120</strong></p>
+        <p>−20%: 120 × 0.8 = <strong style="color:var(--purple);">96</strong></p>
+      </div>
+      <p style="font-size:13px;color:var(--purple);font-weight:800;">❌ No! The final number is 96, not 100.</p>
+      <p style="font-size:12px;color:var(--muted);">Why? 20% of 120 is bigger than 20% of 100, so taking it away removes more than was added.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="teaser-box" style="border-color:var(--orange);display:flex;flex-direction:column;gap:8px;">
+        <span class="tag tag-orange" style="align-self:flex-start;">Challenge 2</span>
+        <p style="font-size:13px;font-weight:700;line-height:1.5;">A toy costs $100, discounted 20%, then the new price is discounted 20% again. Final price?</p>
+        <div style="background:#FFF0E8;border-radius:10px;padding:9px 12px;font-family:'Fira Code',monospace;font-size:12.5px;line-height:1.9;">
+          <p>$100 − 20% = $100 − $20 = $80</p>
+          <p>$80 − 20% = $80 − $16 = <strong style="color:var(--orange);">$64</strong></p>
+        </div>
+      </div>
+      <div class="teaser-box" style="border-color:var(--teal);display:flex;flex-direction:column;gap:8px;">
+        <span class="tag tag-teal" style="align-self:flex-start;">🧩 Brain Teaser</span>
+        <p style="font-size:13px;font-weight:700;">50% of a number equals 25% of 80. What is the number?</p>
+        <div style="background:#E8FBF4;border-radius:10px;padding:9px 12px;font-family:'Fira Code',monospace;font-size:12.5px;line-height:1.9;">
+          <p>25% of 80 = 0.25 × 80 = <strong>20</strong></p>
+          <p>50% of x = 20 → x = 20 × 2 = <strong style="color:var(--teal);">40</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 11 — QUIZ
+══════════════════════════════════════ -->
+<div class="slide" id="s11">
+  <div class="blob b1"></div>
+  <div class="slide-label">Knowledge Check</div>
+  <h2>Quiz Time! 🧠</h2>
+  <div class="prog-bar"><div class="prog-fill" id="qprog" style="width:0%"></div></div>
+  <div id="quiz-area">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span class="q-ctr" id="q-ctr">Question 1 of 10</span>
+      <span id="q-diff-badge" class="diff-badge diff-easy">🟢 Warm-Up</span>
+    </div>
+    <div class="quiz-q" id="q-text"></div>
+    <div class="quiz-opts" id="q-opts"></div>
+    <div class="quiz-fb" id="q-fb"></div>
+    <div class="quiz-nav">
+      <button class="pill-btn" style="background:var(--orange);color:white;display:none;" id="q-next" onclick="nextQ()">Next →</button>
+    </div>
+  </div>
+  <div id="quiz-done" style="display:none;text-align:center;padding:20px;">
+    <div style="font-size:52px;margin-bottom:10px;">🎉</div>
+    <h2 style="color:var(--orange);">Quiz Complete!</h2>
+    <p style="font-size:18px;font-weight:800;margin:12px 0;" id="quiz-score"></p>
+    <button class="pill-btn" style="background:var(--orange);color:white;margin-top:10px;" onclick="resetQuiz()">Try Again 🔄</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 12 — FINAL RECAP
+══════════════════════════════════════ -->
+<div class="slide" id="s12">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <h2>You can now work with percentages! 🌟</h2>
+  <div class="final-grid">
+    <div class="final-card" style="background:rgba(255,140,66,0.15);border:2px solid var(--orange);">
+      <div style="font-size:34px;">%</div>
+      <h3>What is a Percent?</h3>
+      <p>A number out of 100. X% = X/100 = decimal.</p>
+    </div>
+    <div class="final-card" style="background:rgba(0,201,167,0.12);border:2px solid var(--teal);">
+      <div style="font-size:34px;">✖️</div>
+      <h3>Finding X% of N</h3>
+      <p>Convert % to decimal, then multiply: N × (X/100).</p>
+    </div>
+    <div class="final-card" style="background:rgba(255,217,61,0.14);border:2px solid var(--yellow);">
+      <div style="font-size:34px;">📉</div>
+      <h3>Decrease</h3>
+      <p>Below 100% → result is smaller than the original.</p>
+    </div>
+    <div class="final-card" style="background:rgba(76,175,80,0.12);border:2px solid var(--green);">
+      <div style="font-size:34px;">📈</div>
+      <h3>Increase</h3>
+      <p>Above 100% → result is larger than the original.</p>
+    </div>
+    <div class="final-card" style="background:rgba(132,94,194,0.12);border:2px solid var(--purple);">
+      <div style="font-size:34px;">📐</div>
+      <h3>Finding a %</h3>
+      <p>(Part ÷ Whole) × 100 = percentage.</p>
+    </div>
+    <div class="final-card" style="background:rgba(0,129,207,0.12);border:2px solid var(--blue);">
+      <div style="font-size:34px;">📅</div>
+      <h3>Next Class</h3>
+      <p>Jun 24 — Factors &amp; Multiples. Homework posted soon!</p>
+    </div>
+  </div>
+  <div style="margin-top:16px;background:rgba(255,255,255,0.07);border-radius:14px;padding:12px 22px;max-width:700px;">
+    <p style="font-size:13px;color:rgba(255,255,255,0.75);text-align:center;font-style:italic;">"Mathematics is, in its own way, the poetry of logical ideas." — Albert Einstein</p>
+  </div>
+</div>
+
+</div><!-- end .deck -->
+
+<div class="nav">
+  <button onclick="nav(-1)">←</button>
+  <div class="dots" id="dots"></div>
+  <span class="slide-counter" id="ctr">1 / 12</span>
+  <button onclick="nav(1)">→</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  SLIDE ENGINE
+// ═══════════════════════════════════════════════════════
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+let cur = 0;
+slides.forEach((_,i)=>{
+  const d = document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>goTo(i);
+  dotsEl.appendChild(d);
+});
+function goTo(n){
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('out');
+  setTimeout(()=>slides[cur].classList.remove('out'),400);
+  cur=(n+slides.length)%slides.length;
+  slides[cur].classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+  document.getElementById('ctr').textContent=(cur+1)+' / '+slides.length;
+}
+function nav(d){goTo(cur+d);}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') nav(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') nav(-1);
+  if(e.key==='f'||e.key==='F') document.documentElement.requestFullscreen?.();
+});
+
+// ═══════════════════════════════════════════════════════
+//  SLIDE 8 — PERCENTAGE CALCULATOR
+// ═══════════════════════════════════════════════════════
+const PCT_OPTS = [10,20,25,50,75,100,150];
+const NUM_OPTS = [20,30,40,55,80,100,140];
+const FRAC_MAP = {10:'1/10',20:'1/5',25:'1/4',50:'1/2',75:'3/4'};
+let selPct=null, selNum=null;
+
+function buildChips(ids, opts, key, setter){
+  const el=document.getElementById(ids);
+  opts.forEach(v=>{
+    const btn=document.createElement('button');
+    btn.className='calc-chip';
+    btn.textContent=(key==='pct'?v+'%':v);
+    btn.onclick=()=>{
+      el.querySelectorAll('.calc-chip').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      setter(v); calcUpdate();
+    };
+    el.appendChild(btn);
+  });
+}
+buildChips('pct-chips',PCT_OPTS,'pct',v=>selPct=v);
+buildChips('num-chips',NUM_OPTS,'num',v=>selNum=v);
+
+function calcUpdate(){
+  if(selPct===null||selNum===null){
+    document.getElementById('calc-result').innerHTML='<div class="calc-placeholder">👆 Pick a percentage and a number to see the calculation.</div>';
+    return;
+  }
+  const dec=selPct/100;
+  const result=+(dec*selNum).toFixed(4);
+  const fracNote=FRAC_MAP[selPct]?` = ${FRAC_MAP[selPct]}`:'';
+  const typeNote=selPct>100?'📈 Above 100% — result is larger than the original':selPct===100?'↔️ 100% — result equals the original':'📉 Below 100% — result is smaller than the original';
+  document.getElementById('calc-result').innerHTML=`
+    <div class="calc-step"><span class="step-label">Step 1</span>Convert: <strong>${selPct}% = ${selPct}/100 = ${dec}${fracNote}</strong></div>
+    <div class="calc-step"><span class="step-label">Step 2</span>Multiply: <strong>${dec} × ${selNum} = ${result}</strong></div>
+    <div class="calc-answer">${selPct}% of ${selNum} = <strong>${result}</strong></div>
+    <div class="calc-type">${typeNote}</div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+//  SLIDE 9 — PRACTICE PROBLEMS
+// ═══════════════════════════════════════════════════════
+const practices=[
+  {q:'40% of 80',  steps:'40% = 0.40\n0.40 × 80 = 32', answer:'40% of 80 = 32'},
+  {q:'25% of 84',  steps:'25% = 0.25\n0.25 × 84 = 21', answer:'25% of 84 = 21'},
+  {q:'150% of 140',steps:'150% = 1.50\n1.50 × 140 = 210', answer:'150% of 140 = 210'},
+  {q:'20% of 40',  steps:'20% = 0.20\n0.20 × 40 = 8', answer:'20% of 40 = 8'},
+  {q:'30% of 60',  steps:'30% = 0.30\n0.30 × 60 = 18', answer:'30% of 60 = 18 ✓ (not 16!)'},
+];
+let practiceIdx=0, practiceRevealed=false;
+
+function buildPracticeList(){
+  const el=document.getElementById('practice-list');
+  el.innerHTML='';
+  practices.forEach((p,i)=>{
+    const row=document.createElement('div');
+    row.className='practice-row'+(i===practiceIdx?' active':'');
+    row.innerHTML=`<div class="p-q">${p.q}</div>`;
+    row.onclick=()=>{practiceIdx=i;practiceRevealed=false;document.getElementById('p-answer').textContent='';buildPracticeList();renderPractice();};
+    el.appendChild(row);
+  });
+}
+function renderPractice(){
+  document.getElementById('p-problem').textContent=practices[practiceIdx].q;
+  if(!practiceRevealed) document.getElementById('p-answer').textContent='';
+}
+function revealPractice(){
+  practiceRevealed=true;
+  const p=practices[practiceIdx];
+  document.getElementById('p-answer').innerHTML=
+    '<div style="font-size:12.5px;color:rgba(255,255,255,0.6);line-height:1.9;white-space:pre-wrap;margin-bottom:6px;">'+p.steps+'</div>'+
+    '<div style="color:var(--teal);font-weight:800;">✅ '+p.answer+'</div>';
+}
+buildPracticeList();
+renderPractice();
+
+// ═══════════════════════════════════════════════════════
+//  SLIDE 11 — QUIZ ENGINE
+// ═══════════════════════════════════════════════════════
+const questions=[
+  {q:'Emma has 20 stickers. She gives away 10% of them. How many stickers does she give away?',
+   opts:['1 sticker','2 stickers','5 stickers','10 stickers'],ans:1,
+   diff:'easy',exp:'10% = 0.10. 0.10 × 20 = 2. Emma gives away 2 stickers.'},
+  {q:'What does 50% mean?',
+   opts:['Double of something','Half of something (50/100 = ½)','A quarter of something','The whole thing'],ans:1,
+   diff:'easy',exp:'50% means 50 out of 100, which simplifies to 1/2 — or half of something.'},
+  {q:'What is 25% as a decimal?',
+   opts:['0.025','2.5','0.25','25.0'],ans:2,
+   diff:'easy',exp:'To convert any percent to a decimal, divide by 100. 25 ÷ 100 = 0.25.'},
+  {q:'A pizza has 8 slices. Jake eats 2 slices. What percentage of the pizza did Jake eat?',
+   opts:['2%','20%','25%','28%'],ans:2,
+   diff:'medium',exp:'Jake ate 2 out of 8 slices. (2 ÷ 8) × 100 = 0.25 × 100 = 25%.'},
+  {q:'What is 20% of 55?',
+   opts:['10','11','15','20'],ans:1,
+   diff:'medium',exp:'20% = 0.20. 0.20 × 55 = 11.'},
+  {q:'A class has 25 students. 9 voted for Maria. What percentage voted for Maria?',
+   opts:['9%','25%','36%','45%'],ans:2,
+   diff:'medium',exp:'(9 ÷ 25) × 100 = 0.36 × 100 = 36%.'},
+  {q:'A bike costs $80. It goes on sale for 25% off. What is the sale price?',
+   opts:['$20','$55','$60','$65'],ans:2,
+   diff:'medium',exp:'25% of $80 = 0.25 × 80 = $20 discount. $80 − $20 = $60.'},
+  {q:'2% of students at a 700-student school have red hair. How many students is that?',
+   opts:['2','7','14','20'],ans:2,
+   diff:'hard',exp:'2% = 0.02. 0.02 × 700 = 14 students.'},
+  {q:'A toy costs $100. It is discounted 20%, then the new price is discounted 20% again. What is the final price?',
+   opts:['$60','$64','$68','$80'],ans:1,
+   diff:'hard',exp:'$100 − 20% = $80. Then $80 − 20% = $80 − $16 = $64. Note: two 20% discounts ≠ one 40% discount!'},
+  {q:'50% of a number equals 25% of 80. What is the number?',
+   opts:['20','30','40','50'],ans:2,
+   diff:'hard',exp:'25% of 80 = 0.25 × 80 = 20. So 50% of x = 20, meaning x = 20 ÷ 0.5 = 40.'},
+];
+let qIdx=0,score=0,answered=false;
+function renderQ(){
+  const q=questions[qIdx];
+  document.getElementById('q-text').innerHTML=q.q;
+  document.getElementById('q-ctr').textContent='Question '+(qIdx+1)+' of '+questions.length;
+  document.getElementById('qprog').style.width=(qIdx/questions.length*100)+'%';
+  document.getElementById('q-fb').textContent='';
+  document.getElementById('q-next').style.display='none';
+  answered=false;
+  const badge=document.getElementById('q-diff-badge');
+  badge.className='diff-badge diff-'+q.diff;
+  badge.textContent=q.diff==='easy'?'🟢 Warm-Up':q.diff==='medium'?'🟡 Getting Harder':'🔴 Challenge';
+  const opts=document.getElementById('q-opts');
+  opts.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='quiz-opt';
+    btn.textContent=opt;
+    btn.onclick=()=>answer(i,btn);
+    opts.appendChild(btn);
+  });
+}
+function answer(i,btn){
+  if(answered)return;
+  answered=true;
+  const correct=questions[qIdx].ans;
+  document.querySelectorAll('.quiz-opt').forEach((b,idx)=>{
+    if(idx===correct)b.classList.add('correct');
+    else b.classList.add('wrong');
+    b.disabled=true;
+  });
+  const fb=document.getElementById('q-fb');
+  if(i===correct){score++;fb.innerHTML='🎉 Correct! <span style="font-weight:600;font-size:12.5px;">'+questions[qIdx].exp+'</span>';}
+  else{fb.innerHTML='❌ Not quite. <span style="font-weight:600;font-size:12.5px;">'+questions[qIdx].exp+'</span>';}
+  document.getElementById('q-next').style.display='inline-block';
+}
+function nextQ(){
+  qIdx++;
+  if(qIdx>=questions.length){
+    document.getElementById('quiz-area').style.display='none';
+    document.getElementById('quiz-done').style.display='block';
+    document.getElementById('qprog').style.width='100%';
+    const pct=Math.round(score/questions.length*100);
+    document.getElementById('quiz-score').textContent=
+      `You got ${score} out of ${questions.length} (${pct}%) ${pct>=90?'🌟 Outstanding!':pct>=70?'👍 Well done!':pct>=50?'💪 Keep practicing!':'📖 Review the slides and try again!'}`;
+  }else renderQ();
+}
+function resetQuiz(){
+  qIdx=0;score=0;
+  document.getElementById('quiz-area').style.display='block';
+  document.getElementById('quiz-done').style.display='none';
+  renderQ();
+}
+renderQ();
+</script>
+</body>
+</html>
