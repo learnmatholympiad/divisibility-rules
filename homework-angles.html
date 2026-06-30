@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homework — Angles</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fira+Code:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow:#FFD93D; --orange:#FF8C42; --teal:#00C9A7; --purple:#845EC2;
+  --blue:#0081CF; --cyan:#38BDF8; --red:#E84040;
+  --bg:#FFFBF0; --dark:#1A1333; --card:#FFFFFF;
+  --text:#1A1333; --muted:#6B6880;
+  --radius:16px; --shadow:0 6px 28px rgba(26,19,51,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+.page{max-width:780px;margin:0 auto;padding:40px 28px 80px;}
+.back{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:var(--muted);text-decoration:none;margin-bottom:32px;letter-spacing:.04em;transition:color .15s;}
+.back:hover{color:var(--blue);}
+.hw-header{margin-bottom:36px;}
+.hw-eyebrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.tag{display:inline-block;padding:3px 12px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.06em;}
+.tag-blue{background:var(--blue);color:#fff;}
+.tag-cyan{background:var(--cyan);color:var(--dark);}
+.hw-title{font-size:clamp(24px,4vw,38px);font-weight:900;line-height:1.15;}
+.hw-title em{color:var(--blue);font-style:normal;}
+.hw-sub{font-size:14px;color:var(--muted);margin-top:10px;font-weight:600;line-height:1.5;}
+.section-label{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;display:flex;align-items:center;gap:14px;}
+.section-label::after{content:'';flex:1;height:1px;background:#E5E0F0;}
+.mc-card{background:var(--card);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow);margin-bottom:16px;border-left:5px solid var(--blue);}
+.mc-card .q-num{font-family:'Fira Code',monospace;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.mc-card .q-text{font-size:15px;font-weight:700;line-height:1.6;color:var(--dark);margin-bottom:14px;}
+.mc-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mc-opt{padding:10px 14px;border-radius:12px;border:2.5px solid #CFE4F7;background:white;font-family:'Nunito',sans-serif;font-weight:700;font-size:13px;cursor:pointer;text-align:left;transition:all .18s;line-height:1.4;}
+.mc-opt:hover:not([disabled]):not(.correct):not(.wrong){border-color:var(--blue);background:#EAF3FF;}
+.mc-opt.correct{border-color:var(--teal);background:#E8FBF4;color:#0F6E56;cursor:default;}
+.mc-opt.wrong{border-color:var(--red);background:#FFF0F0;color:#A32D2D;}
+.mc-opt[disabled]:not(.correct):not(.wrong){opacity:.4;cursor:not-allowed;}
+.mc-feedback{min-height:28px;margin-top:10px;font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:6px;}
+.sa-card{background:var(--card);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow);margin-bottom:16px;border-left:5px solid var(--cyan);}
+.sa-card .q-num{font-family:'Fira Code',monospace;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.sa-card .q-text{font-size:15px;font-weight:700;line-height:1.6;color:var(--dark);}
+.sa-card .q-notebook{margin-top:14px;display:flex;align-items:center;gap:8px;background:#EAF3FF;border-radius:10px;padding:9px 14px;}
+.sa-card .q-notebook span{font-size:12px;color:#0A4D80;font-weight:700;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="index.html">← Back to Lessons</a>
+
+  <div class="hw-header">
+    <div class="hw-eyebrow">
+      <span class="tag tag-cyan">Homework</span>
+      <span class="tag tag-blue">Lesson 06 · Angles</span>
+    </div>
+    <h1 class="hw-title"><em>Angles</em> Homework &ang;</h1>
+    <p class="hw-sub">Multiple choice: select your answer and get instant feedback. Short answer: show your working in your notebook.</p>
+  </div>
+
+  <div class="section-label">Multiple Choice</div>
+
+  <div class="mc-card" id="mc1">
+    <div class="q-num">Question 1</div>
+    <p class="q-text">What type of angle measures 145°?</p>
+    <div class="mc-opts">
+      <button class="mc-opt" onclick="checkMC('mc1',this,false)">Acute</button>
+      <button class="mc-opt" onclick="checkMC('mc1',this,false)">Right</button>
+      <button class="mc-opt" onclick="checkMC('mc1',this,true)">Obtuse</button>
+      <button class="mc-opt" onclick="checkMC('mc1',this,false)">Reflex</button>
+    </div>
+    <div class="mc-feedback" id="mc1-fb"></div>
+  </div>
+
+  <div class="mc-card" id="mc2">
+    <div class="q-num">Question 2</div>
+    <p class="q-text">Which pair of angles is supplementary?</p>
+    <div class="mc-opts">
+      <button class="mc-opt" onclick="checkMC('mc2',this,false)">100° and 90°</button>
+      <button class="mc-opt" onclick="checkMC('mc2',this,true)">120° and 60°</button>
+      <button class="mc-opt" onclick="checkMC('mc2',this,false)">70° and 20°</button>
+      <button class="mc-opt" onclick="checkMC('mc2',this,false)">45° and 45°</button>
+    </div>
+    <div class="mc-feedback" id="mc2-fb"></div>
+  </div>
+
+  <div class="mc-card" id="mc3">
+    <div class="q-num">Question 3</div>
+    <p class="q-text">What is the complement of a 25° angle?</p>
+    <div class="mc-opts">
+      <button class="mc-opt" onclick="checkMC('mc3',this,true)">65°</button>
+      <button class="mc-opt" onclick="checkMC('mc3',this,false)">75°</button>
+      <button class="mc-opt" onclick="checkMC('mc3',this,false)">155°</button>
+      <button class="mc-opt" onclick="checkMC('mc3',this,false)">25°</button>
+    </div>
+    <div class="mc-feedback" id="mc3-fb"></div>
+  </div>
+
+  <div class="mc-card" id="mc4">
+    <div class="q-num">Question 4</div>
+    <p class="q-text">An angle that measures 250° is a/an…</p>
+    <div class="mc-opts">
+      <button class="mc-opt" onclick="checkMC('mc4',this,false)">Obtuse angle</button>
+      <button class="mc-opt" onclick="checkMC('mc4',this,false)">Straight angle</button>
+      <button class="mc-opt" onclick="checkMC('mc4',this,true)">Reflex angle</button>
+      <button class="mc-opt" onclick="checkMC('mc4',this,false)">Right angle</button>
+    </div>
+    <div class="mc-feedback" id="mc4-fb"></div>
+  </div>
+
+  <div class="mc-card" id="mc5">
+    <div class="q-num">Question 5</div>
+    <p class="q-text">Which tool is normally used to measure angles?</p>
+    <div class="mc-opts">
+      <button class="mc-opt" onclick="checkMC('mc5',this,false)">Ruler</button>
+      <button class="mc-opt" onclick="checkMC('mc5',this,true)">Protractor</button>
+      <button class="mc-opt" onclick="checkMC('mc5',this,false)">Compass</button>
+      <button class="mc-opt" onclick="checkMC('mc5',this,false)">Calculator</button>
+    </div>
+    <div class="mc-feedback" id="mc5-fb"></div>
+  </div>
+
+  <div class="section-label" style="margin-top:32px;">Short Answer — Word Problems</div>
+
+  <div class="sa-card">
+    <div class="q-num">Question 6</div>
+    <p class="q-text">Two angles form a linear pair (they sit together on a straight line). One measures (3x)° and the other measures (2x)°. Find the value of x, then find the size of each angle. Show all your steps.</p>
+    <div class="q-notebook"><span>✏️ Write your answer in your notebook.</span></div>
+  </div>
+
+  <div class="sa-card">
+    <div class="q-num">Question 7</div>
+    <p class="q-text">Explain the difference between <strong>complementary</strong> and <strong>supplementary</strong> angles. Be sure to say what number each pair adds up to, and give one example of each.</p>
+    <div class="q-notebook"><span>✏️ Write your answer in your notebook.</span></div>
+  </div>
+
+  <div class="sa-card">
+    <div class="q-num">Question 8</div>
+    <p class="q-text">What is a <strong>reflex angle</strong>? Explain in your own words, give one example of a reflex angle measure, and explain why 180° and 360° are <em>not</em> reflex angles.</p>
+    <div class="q-notebook"><span>✏️ Write your answer in your notebook.</span></div>
+  </div>
+
+</div>
+
+<script>
+function checkMC(cardId, btn, isCorrect) {
+  const card = document.getElementById(cardId);
+  const fb   = document.getElementById(cardId + '-fb');
+  if (card.dataset.solved === 'true') return;
+  if (isCorrect) {
+    btn.classList.add('correct');
+    card.querySelectorAll('.mc-opt').forEach(b => { b.disabled = true; });
+    fb.innerHTML = '✅ Correct!';
+    fb.style.color = '#0F6E56';
+    card.dataset.solved = 'true';
+  } else {
+    btn.classList.add('wrong');
+    btn.disabled = true;
+    fb.innerHTML = '❌ Incorrect, try again!';
+    fb.style.color = '#A32D2D';
+  }
+}
+</script>
+</body>
+</html>

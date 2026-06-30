@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 06 – Angles</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fira+Code:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow:#FFD93D; --orange:#FF8C42; --pink:#FF6B9D; --purple:#845EC2;
+  --blue:#0081CF; --teal:#00C9A7; --green:#4CAF50; --red:#E84040;
+  --lime:#A8E063; --cyan:#38BDF8; --violet:#C77DFF;
+  --bg:#FFFBF0; --dark:#1A1333; --card:#FFFFFF;
+  --text:#1A1333; --muted:#6B6880;
+  --radius:16px; --shadow:0 6px 28px rgba(26,19,51,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
+.deck{width:100vw;height:100vh;position:relative;}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:32px 52px 88px;opacity:0;pointer-events:none;transition:opacity .35s ease,transform .35s ease;transform:translateX(60px);}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0);}
+.slide.out{opacity:0;transform:translateX(-60px);}
+.nav{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:var(--dark);border-radius:999px;padding:9px 18px;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,0.28);}
+.nav button{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:4px 10px;border-radius:999px;transition:background .15s;font-family:'Nunito',sans-serif;}
+.nav button:hover{background:rgba(255,255,255,0.12);}
+.nav .slide-counter{color:rgba(255,255,255,0.6);font-size:12px;font-weight:800;min-width:56px;text-align:center;letter-spacing:.04em;}
+.nav .dots{display:flex;gap:5px;}
+.nav .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.22);transition:background .2s,transform .2s;cursor:pointer;}
+.nav .dot.active{background:var(--yellow);transform:scale(1.35);}
+.slide-label{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;opacity:.5;}
+h1{font-size:clamp(26px,4.2vw,52px);font-weight:900;line-height:1.1;}
+h2{font-size:clamp(18px,2.6vw,34px);font-weight:900;line-height:1.2;margin-bottom:12px;}
+h3{font-size:15px;font-weight:800;margin-bottom:4px;}
+p,li{font-size:clamp(13px,1.5vw,15px);line-height:1.6;}
+.tag{display:inline-block;padding:3px 12px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.06em;}
+.tag-yellow{background:var(--yellow);color:var(--dark);}
+.tag-teal{background:var(--teal);color:var(--dark);}
+.tag-cyan{background:var(--cyan);color:var(--dark);}
+.tag-blue{background:var(--blue);color:#fff;}
+.tag-orange{background:var(--orange);color:#fff;}
+.tag-purple{background:var(--purple);color:#fff;}
+code,.mono{font-family:'Fira Code',monospace;background:#E8F2FF;border-radius:6px;padding:1px 7px;font-size:.88em;color:var(--blue);}
+.blob{position:absolute;border-radius:50%;filter:blur(65px);opacity:.18;pointer-events:none;z-index:0;}
+.slide>*{position:relative;z-index:1;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.tri-row{display:flex;gap:14px;margin-top:10px;flex:1;}
+.tri-card{flex:1;background:white;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid;display:flex;flex-direction:column;gap:8px;align-items:flex-start;}
+.pill-btn{display:inline-block;padding:8px 18px;border-radius:999px;border:none;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:transform .12s,box-shadow .12s;}
+.pill-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.15);}
+.anglebox{align-self:center;display:flex;justify-content:center;width:100%;}
+
+/* S1 */
+#s1{background:linear-gradient(135deg,#E8F5FF 0%,#F5F0FF 50%,#FFFBE8 100%);justify-content:center;}
+#s1 .b1{width:420px;height:420px;background:var(--blue);top:-110px;right:-90px;}
+#s1 .b2{width:300px;height:300px;background:var(--orange);bottom:-70px;left:-70px;}
+#s1 h1 em{color:var(--blue);font-style:normal;}
+/* S2 TYPES I */
+#s2{background:#E8F2FF;}
+#s2 .b1{width:280px;height:280px;background:var(--blue);top:-60px;right:-60px;}
+/* S3 TYPES II */
+#s3{background:linear-gradient(135deg,#FFFBF0 0%,#F5F0FF 100%);}
+#s3 .b1{width:280px;height:280px;background:var(--purple);bottom:-60px;left:-60px;}
+/* S4 CHART */
+#s4{background:#F0F8FF;}
+#s4 .b1{width:260px;height:260px;background:var(--cyan);top:-60px;right:-60px;}
+.chart-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px;flex:1;}
+.chart-cell{background:white;border-radius:14px;box-shadow:var(--shadow);padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;border-bottom:3px solid var(--blue);}
+.chart-cell .nm{font-weight:800;font-size:13px;}
+.chart-cell .rg{font-size:11px;color:var(--muted);font-family:'Fira Code',monospace;}
+/* S5 COMPLEMENTARY / SUPPLEMENTARY */
+#s5{background:#FFFBE8;}
+#s5 .b1{width:280px;height:280px;background:var(--yellow);top:-60px;left:-60px;}
+.method-box{background:white;border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);border-left:5px solid;}
+/* S6 PROTRACTOR */
+#s6{background:linear-gradient(135deg,#E8F2FF 0%,#E8FFFB 100%);}
+#s6 .b1{width:260px;height:260px;background:var(--teal);bottom:-60px;right:-60px;}
+/* S7 LINEAR PAIR / FIND UNKNOWN */
+#s7{background:#F5F0FF;}
+#s7 .b1{width:280px;height:280px;background:var(--purple);top:-60px;right:-60px;}
+.formula-box{background:white;border-radius:var(--radius);padding:16px 22px;box-shadow:var(--shadow);border-left:6px solid var(--purple);margin:10px 0;}
+.formula-box .formula{font-family:'Fira Code',monospace;font-size:clamp(13px,1.7vw,18px);font-weight:700;color:var(--dark);line-height:1.9;}
+.formula-box .formula em{color:var(--purple);font-style:normal;}
+/* S8 EXPLORER */
+#s8{background:var(--dark);color:white;}
+#s8 h2{color:white;}#s8 .slide-label{opacity:.5;}
+.calc-layout{display:flex;gap:16px;flex:1;margin-top:8px;}
+.calc-list{min-width:120px;display:flex;flex-direction:column;gap:7px;}
+.calc-row{background:rgba(255,255,255,0.06);border:2px solid var(--cyan);border-radius:12px;padding:8px 14px;cursor:pointer;transition:all .15s;font-family:'Fira Code',monospace;font-size:14px;font-weight:700;color:var(--cyan);text-align:center;}
+.calc-row:hover{background:rgba(56,189,248,0.12);}
+.calc-row.active{border-color:var(--yellow);background:rgba(255,217,61,0.12);color:var(--yellow);}
+.calc-panel{flex:1;background:#0E0B1E;border-radius:16px;padding:18px 22px;display:flex;gap:22px;align-items:center;}
+.calc-svgwrap{background:#fff;border-radius:14px;padding:10px;display:flex;align-items:center;justify-content:center;min-width:210px;}
+.calc-info{display:flex;flex-direction:column;gap:8px;}
+.calc-deg{font-family:'Fira Code',monospace;font-size:clamp(26px,4vw,42px);font-weight:700;color:var(--cyan);}
+.calc-type{font-size:18px;font-weight:800;}
+.calc-note{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;}
+/* S9 PRACTICE */
+#s9{background:#1A1333;color:white;}
+#s9 h2{color:white;}#s9 .slide-label{opacity:.5;}
+.practice-layout{display:flex;gap:16px;flex:1;margin-top:8px;}
+.practice-list{min-width:200px;display:flex;flex-direction:column;gap:7px;}
+.practice-row{background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.08);border-radius:12px;padding:8px 12px;cursor:pointer;transition:all .15s;}
+.practice-row:hover{border-color:rgba(255,255,255,0.25);}
+.practice-row.active{border-color:var(--yellow);background:rgba(255,217,61,0.08);}
+.practice-row .p-q{font-size:12.5px;font-weight:700;font-family:'Fira Code',monospace;}
+.practice-panel{flex:1;background:#0E0B1E;border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;}
+.p-problem{font-family:'Fira Code',monospace;font-size:clamp(16px,2.2vw,24px);font-weight:700;color:var(--yellow);}
+.p-answer{font-size:14px;font-weight:800;color:var(--teal);}
+/* S10 QUIZ */
+#s10{background:#E8F2FF;}
+#s10 .b1{width:260px;height:260px;background:var(--blue);top:-60px;right:-60px;}
+.quiz-q{font-size:clamp(13px,1.9vw,17px);font-weight:800;margin-bottom:14px;line-height:1.4;}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.quiz-opt{padding:11px 14px;border-radius:14px;border:2.5px solid #ddd;background:white;font-family:'Nunito',sans-serif;font-weight:700;font-size:12.5px;cursor:pointer;text-align:left;transition:all .18s;box-shadow:var(--shadow);line-height:1.4;}
+.quiz-opt:hover:not([disabled]){border-color:var(--blue);transform:translateY(-2px);}
+.quiz-opt.correct{border-color:var(--teal);background:#E8FBF4;color:#0F6E56;}
+.quiz-opt.wrong{border-color:var(--red);background:#FFF0F0;color:#A32D2D;}
+.quiz-fb{min-height:50px;font-size:13px;font-weight:700;padding-top:10px;display:flex;align-items:center;gap:8px;line-height:1.4;}
+.prog-bar{height:6px;background:#CBE3FF;border-radius:3px;margin-bottom:12px;}
+.prog-fill{height:100%;background:var(--blue);border-radius:3px;transition:width .4s;}
+.diff-badge{font-size:10px;font-weight:800;padding:2px 9px;border-radius:999px;letter-spacing:.06em;}
+.diff-easy{background:#E8FBF4;color:#0F6E56;}
+.diff-medium{background:#FFF8E1;color:#8B5E00;}
+.diff-hard{background:#FFF0F0;color:#A32D2D;}
+/* S11 FINAL */
+#s11{background:var(--dark);color:white;justify-content:center;align-items:center;text-align:center;}
+#s11 .b1{width:360px;height:360px;background:var(--blue);top:-100px;left:-100px;}
+#s11 .b2{width:300px;height:300px;background:var(--orange);bottom:-80px;right:-80px;}
+#s11 h2{color:white;font-size:clamp(22px,3.2vw,40px);}
+.final-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;width:100%;max-width:840px;}
+.final-card{border-radius:var(--radius);padding:16px 14px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;}
+.final-card h3{font-size:13px;color:white;}
+.final-card p{font-size:11px;color:rgba(255,255,255,0.88);line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- S1 TITLE -->
+<div class="slide active" id="s1">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+    <span class="tag tag-blue">Lesson 06</span>
+    <span class="tag tag-cyan">6th Grade Math</span>
+    <span class="tag tag-yellow">New Topic</span>
+  </div>
+  <h1><em>Angles</em> &ang;</h1>
+  <p style="font-size:clamp(14px,1.8vw,19px);color:var(--muted);margin-top:14px;font-weight:600;">An angle is the amount of turn between two rays meeting at a point — measured in degrees (°).</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;">
+    <span class="tag tag-blue">✦ Types of angles</span>
+    <span class="tag tag-purple">✦ Reflex &amp; full turns</span>
+    <span class="tag tag-orange">✦ Complementary &amp; Supplementary</span>
+    <span class="tag tag-teal">✦ The protractor</span>
+    <span class="tag tag-yellow">✦ Finding unknowns</span>
+  </div>
+  <div style="margin-top:26px;background:white;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);display:inline-flex;gap:12px;align-items:center;max-width:660px;">
+    <span style="font-size:22px;">💡</span>
+    <p style="font-size:13px;"><strong>Big idea:</strong> every angle is just a measure of turning. A tiny turn is a small angle; a half-turn is 180°; a full spin all the way around is 360°.</p>
+  </div>
+</div>
+
+<!-- S2 TYPES I -->
+<div class="slide" id="s2">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 1 — Different angle measures</div>
+  <h2>Acute, Right &amp; Obtuse 📐</h2>
+  <div class="tri-row" style="margin-top:8px;">
+    <div class="tri-card" style="border-color:var(--teal);">
+      <h3 style="color:var(--teal);">Acute</h3>
+      <div class="anglebox" data-angle="45" data-color="#00C9A7"></div>
+      <p style="font-size:13px;line-height:1.6;">An <strong>acute</strong> angle is <strong>less than 90°</strong> — a small, sharp opening.</p>
+    </div>
+    <div class="tri-card" style="border-color:var(--blue);">
+      <h3 style="color:var(--blue);">Right</h3>
+      <div class="anglebox" data-angle="90" data-color="#0081CF"></div>
+      <p style="font-size:13px;line-height:1.6;">A <strong>right</strong> angle is <strong>exactly 90°</strong> — a perfect square corner.</p>
+    </div>
+    <div class="tri-card" style="border-color:var(--orange);">
+      <h3 style="color:var(--orange);">Obtuse</h3>
+      <div class="anglebox" data-angle="130" data-color="#FF8C42"></div>
+      <p style="font-size:13px;line-height:1.6;">An <strong>obtuse</strong> angle is <strong>greater than 90°</strong> (but less than 180°) — a wide opening.</p>
+    </div>
+  </div>
+  <div style="margin-top:12px;background:var(--yellow);border-radius:12px;padding:10px 16px;">
+    <p style="font-size:13px;color:var(--dark);"><strong>🎯 Remember:</strong> 90° is the boundary. Below it → acute. Right on it → right. Above it → obtuse.</p>
+  </div>
+</div>
+
+<!-- S3 TYPES II -->
+<div class="slide" id="s3">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 1 — Bigger turns</div>
+  <h2>Straight, Reflex &amp; Full Rotation 🔄</h2>
+  <div class="tri-row" style="margin-top:8px;">
+    <div class="tri-card" style="border-color:var(--pink);">
+      <h3 style="color:var(--pink);">Straight</h3>
+      <div class="anglebox" data-angle="180" data-color="#FF6B9D"></div>
+      <p style="font-size:13px;line-height:1.6;"><strong>Exactly 180°.</strong> The two rays point opposite ways and form a <strong>straight line</strong>.</p>
+    </div>
+    <div class="tri-card" style="border-color:var(--purple);">
+      <h3 style="color:var(--purple);">Reflex</h3>
+      <div class="anglebox" data-angle="240" data-color="#845EC2"></div>
+      <p style="font-size:13px;line-height:1.6;">A <strong>reflex</strong> angle is <strong>greater than 180°</strong> (but less than 360°) — the "big way around."</p>
+    </div>
+    <div class="tri-card" style="border-color:var(--blue);">
+      <h3 style="color:var(--blue);">Full rotation</h3>
+      <div class="anglebox" data-angle="360" data-color="#0081CF"></div>
+      <p style="font-size:13px;line-height:1.6;"><strong>Exactly 360°.</strong> One <strong>complete spin</strong> all the way around a circle, back to the start.</p>
+    </div>
+  </div>
+  <div style="margin-top:12px;background:var(--yellow);border-radius:12px;padding:10px 16px;">
+    <p style="font-size:13px;color:var(--dark);"><strong>💡 Tip:</strong> 180° is a straight line; 360° is a full circle. A reflex angle lives in between — it's more than a straight line but not a whole turn.</p>
+  </div>
+</div>
+
+<!-- S4 CHART -->
+<div class="slide" id="s4">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 1 — All together</div>
+  <h2>The six angle types at a glance 👀</h2>
+  <div class="chart-grid">
+    <div class="chart-cell" style="border-color:var(--teal);"><div data-angle="62" data-color="#00C9A7"></div><span class="nm">Acute</span><span class="rg">less than 90°</span></div>
+    <div class="chart-cell" style="border-color:var(--blue);"><div data-angle="90" data-color="#0081CF"></div><span class="nm">Right</span><span class="rg">exactly 90°</span></div>
+    <div class="chart-cell" style="border-color:var(--orange);"><div data-angle="135" data-color="#FF8C42"></div><span class="nm">Obtuse</span><span class="rg">90° to 180°</span></div>
+    <div class="chart-cell" style="border-color:var(--pink);"><div data-angle="180" data-color="#FF6B9D"></div><span class="nm">Straight</span><span class="rg">exactly 180°</span></div>
+    <div class="chart-cell" style="border-color:var(--purple);"><div data-angle="240" data-color="#845EC2"></div><span class="nm">Reflex</span><span class="rg">180° to 360°</span></div>
+    <div class="chart-cell" style="border-color:var(--violet);"><div data-angle="360" data-color="#C77DFF"></div><span class="nm">Full rotation</span><span class="rg">exactly 360°</span></div>
+  </div>
+</div>
+
+<!-- S5 COMPLEMENTARY / SUPPLEMENTARY -->
+<div class="slide" id="s5">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 2 — Angle pairs</div>
+  <h2>Complementary vs. Supplementary 🤝</h2>
+  <div class="grid2" style="flex:1;gap:14px;margin-top:8px;">
+    <div class="method-box" style="border-color:var(--orange);">
+      <h3 style="color:var(--orange);">Complementary → add to 90°</h3>
+      <p style="font-size:13px;line-height:1.7;margin-bottom:8px;">Two angles are <strong>complementary</strong> if their measures add up to <strong>90°</strong>.</p>
+      <div style="font-family:'Fira Code',monospace;font-size:13px;line-height:2.1;background:#FFF3E8;border-radius:10px;padding:10px 12px;">
+        <p>60° + 30° = 90° ✓</p>
+        <p>70° + 20° = 90° ✓</p>
+        <p style="color:var(--muted);font-size:11px;">"C" for Corner (90°).</p>
+      </div>
+    </div>
+    <div class="method-box" style="border-color:var(--purple);">
+      <h3 style="color:var(--purple);">Supplementary → add to 180°</h3>
+      <p style="font-size:13px;line-height:1.7;margin-bottom:8px;">Two angles are <strong>supplementary</strong> if their measures add up to <strong>180°</strong>.</p>
+      <div style="font-family:'Fira Code',monospace;font-size:13px;line-height:2.1;background:#F5F0FF;border-radius:10px;padding:10px 12px;">
+        <p>110° + 70° = 180° ✓</p>
+        <p>130° + 50° = 180° ✓</p>
+        <p style="color:var(--muted);font-size:11px;">"S" for Straight line (180°).</p>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:12px;background:var(--yellow);border-radius:12px;padding:10px 16px;">
+    <p style="font-size:13px;color:var(--dark);"><strong>🎯 To find a missing angle:</strong> for a complement, subtract from 90°. For a supplement, subtract from 180°.</p>
+  </div>
+</div>
+
+<!-- S6 PROTRACTOR -->
+<div class="slide" id="s6">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 2 — Measuring</div>
+  <h2>Measuring with a protractor 📐</h2>
+  <div class="grid2" style="flex:1;gap:18px;margin-top:8px;align-items:center;">
+    <div style="background:white;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);display:flex;justify-content:center;">
+      <svg viewBox="0 0 320 185" width="100%" style="max-width:360px">
+        <!-- protractor body -->
+        <path d="M 30 160 A 130 130 0 0 1 290 160 Z" fill="#EAF3FF" stroke="#0081CF" stroke-width="2"/>
+        <path d="M 70 160 A 90 90 0 0 1 250 160 Z" fill="#fff" stroke="#9CC6EC" stroke-width="1.5"/>
+        <!-- base ray along 0 degrees (to the right) -->
+        <line x1="160" y1="160" x2="298" y2="160" stroke="#1A1333" stroke-width="3" stroke-linecap="round"/>
+        <line x1="22" y1="160" x2="160" y2="160" stroke="#9CC6EC" stroke-width="2"/>
+        <!-- measured ray at 50 degrees -->
+        <line x1="160" y1="160" x2="237" y2="68" stroke="#E84040" stroke-width="3" stroke-linecap="round"/>
+        <!-- small arc showing the opening -->
+        <path d="M 200 160 A 40 40 0 0 0 185.7 130.6" fill="none" stroke="#E84040" stroke-width="2.5"/>
+        <circle cx="160" cy="160" r="4.5" fill="#1A1333"/>
+        <text x="208" y="138" font-family="Fira Code" font-size="15" font-weight="700" fill="#E84040">50°</text>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="method-box" style="border-color:var(--teal);">
+        <h3>How to use it</h3>
+        <ol style="font-size:13px;line-height:1.8;margin-left:16px;">
+          <li>Put the protractor's <strong>center hole</strong> on the angle's <strong>vertex</strong> (the corner).</li>
+          <li>Line up one ray with the <strong>0° line</strong>.</li>
+          <li>Read where the <strong>other ray</strong> crosses the number scale.</li>
+        </ol>
+      </div>
+      <div style="background:var(--yellow);border-radius:12px;padding:10px 16px;">
+        <p style="font-size:13px;color:var(--dark);"><strong>⚠️ Watch out:</strong> a protractor has two scales (0→180 and 180→0). Start from the scale where your first ray reads <strong>0</strong>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S7 LINEAR PAIR / FIND UNKNOWN -->
+<div class="slide" id="s7">
+  <div class="blob b1"></div>
+  <div class="slide-label">Part 3 — Finding unknown angles</div>
+  <h2>Linear pairs &amp; solving for x 🧩</h2>
+  <p style="font-size:13px;margin-bottom:4px;">A <strong>linear pair</strong> is two angles side by side on a straight line — so they are <strong>supplementary (add to 180°)</strong>. We can use that to find a missing value.</p>
+  <div class="grid2" style="gap:14px;margin-top:6px;flex:1;">
+    <div class="formula-box">
+      <p style="font-size:13px;font-weight:800;margin-bottom:6px;">Find x if ∠1 = (4x + 5)° and ∠2 = (7x + 10)° form a linear pair.</p>
+      <div class="formula">
+        <em>∠1 + ∠2 = 180°</em><br>
+        (4x + 5) + (7x + 10) = 180<br>
+        11x + 15 = 180<br>
+        11x = 165<br>
+        x = <strong style="color:var(--purple);">15</strong>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;font-family:'Fira Code',monospace;">Now plug x = 15 back in to check ▶</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="tri-card" style="border-color:var(--teal);width:100%;">
+        <h3>Why it works</h3>
+        <p style="font-size:13px;line-height:1.7;">The two angles together make a straight line, and a straight line is <strong>180°</strong>. So their measures must add to 180°.</p>
+      </div>
+      <div class="tri-card" style="border-color:var(--blue);width:100%;">
+        <h3>Check your answer</h3>
+        <p style="font-size:13px;line-height:1.7;">Put x = 15 back in:<br>
+        ∠1 = 4(15)+5 = <strong>65°</strong><br>
+        ∠2 = 7(15)+10 = <strong>115°</strong><br>
+        65° + 115° = <strong style="color:var(--teal);">180° ✓</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S8 EXPLORER -->
+<div class="slide" id="s8">
+  <div class="slide-label">Try It — Angle Explorer</div>
+  <h2>Pick a measure. See the angle &amp; its name. ⚡</h2>
+  <div class="calc-layout">
+    <div class="calc-list" id="calc-list"></div>
+    <div class="calc-panel">
+      <div class="calc-svgwrap" id="calc-svg"></div>
+      <div class="calc-info">
+        <div class="calc-deg" id="calc-deg"></div>
+        <div class="calc-type" id="calc-type"></div>
+        <div class="calc-note" id="calc-note"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S9 PRACTICE -->
+<div class="slide" id="s9">
+  <div class="slide-label">Practice — Click to Solve</div>
+  <h2>Work through the practice problems 🧮</h2>
+  <div class="practice-layout">
+    <div class="practice-list" id="practice-list"></div>
+    <div class="practice-panel">
+      <p style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:700;">Problem:</p>
+      <div class="p-problem" id="p-problem"></div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:6px;font-style:italic;">Try it yourself, then reveal the solution.</p>
+      <button class="pill-btn" style="background:var(--yellow);color:var(--dark);align-self:flex-start;margin-top:8px;" onclick="revealPractice()">💡 Reveal Solution</button>
+      <div class="p-answer" id="p-answer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- S10 QUIZ -->
+<div class="slide" id="s10">
+  <div class="blob b1"></div>
+  <div class="slide-label">Knowledge Check</div>
+  <h2>Quiz Time! 🧠</h2>
+  <div class="prog-bar"><div class="prog-fill" id="qprog" style="width:0%"></div></div>
+  <div id="quiz-area">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span style="font-size:12px;font-weight:700;color:var(--muted);" id="q-ctr">Question 1 of 10</span>
+      <span id="q-diff-badge" class="diff-badge diff-easy">🟢 Warm-Up</span>
+    </div>
+    <div class="quiz-q" id="q-text"></div>
+    <div class="quiz-opts" id="q-opts"></div>
+    <div class="quiz-fb" id="q-fb"></div>
+    <div style="margin-top:8px;">
+      <button class="pill-btn" style="background:var(--blue);color:#fff;display:none;" id="q-next" onclick="nextQ()">Next →</button>
+    </div>
+  </div>
+  <div id="quiz-done" style="display:none;text-align:center;padding:20px;">
+    <div style="font-size:52px;margin-bottom:10px;">🎉</div>
+    <h2 style="color:var(--blue);">Quiz Complete!</h2>
+    <p style="font-size:18px;font-weight:800;margin:12px 0;" id="quiz-score"></p>
+    <button class="pill-btn" style="background:var(--blue);color:#fff;margin-top:10px;" onclick="resetQuiz()">Try Again 🔄</button>
+  </div>
+</div>
+
+<!-- S11 FINAL -->
+<div class="slide" id="s11">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <h2>You know your angles now! 🌟</h2>
+  <div class="final-grid">
+    <div class="final-card" style="background:rgba(0,201,167,0.15);border:2px solid var(--teal);">
+      <div style="font-size:30px;">📐</div>
+      <h3>Acute / Right / Obtuse</h3>
+      <p>Less than 90° · exactly 90° · more than 90° (up to 180°).</p>
+    </div>
+    <div class="final-card" style="background:rgba(255,107,157,0.16);border:2px solid var(--pink);">
+      <div style="font-size:30px;">📏</div>
+      <h3>Straight &amp; Reflex</h3>
+      <p>Straight = 180°. Reflex = more than 180° but less than 360°.</p>
+    </div>
+    <div class="final-card" style="background:rgba(132,94,194,0.16);border:2px solid var(--purple);">
+      <div style="font-size:30px;">🔄</div>
+      <h3>Full Rotation</h3>
+      <p>360° is one complete spin all the way around.</p>
+    </div>
+    <div class="final-card" style="background:rgba(255,140,66,0.16);border:2px solid var(--orange);">
+      <div style="font-size:30px;">🤝</div>
+      <h3>Angle Pairs</h3>
+      <p>Complementary add to 90°. Supplementary add to 180°.</p>
+    </div>
+    <div class="final-card" style="background:rgba(0,129,207,0.14);border:2px solid var(--blue);">
+      <div style="font-size:30px;">🧩</div>
+      <h3>Find the Unknown</h3>
+      <p>Linear pairs add to 180° — set up an equation and solve for x.</p>
+    </div>
+    <div class="final-card" style="background:rgba(56,189,248,0.14);border:2px solid var(--cyan);">
+      <div style="font-size:30px;">📅</div>
+      <h3>Next Class</h3>
+      <p>July 1 — Lesson 07: Fractions. Homework posted soon!</p>
+    </div>
+  </div>
+  <div style="margin-top:16px;background:rgba(255,255,255,0.07);border-radius:14px;padding:12px 22px;max-width:700px;">
+    <p style="font-size:13px;color:rgba(255,255,255,0.75);text-align:center;font-style:italic;">"Mathematics is, in its own way, the poetry of logical ideas." — Albert Einstein</p>
+  </div>
+</div>
+
+</div>
+
+<div class="nav">
+  <button onclick="nav(-1)">←</button>
+  <div class="dots" id="dots"></div>
+  <span class="slide-counter" id="ctr">1 / 11</span>
+  <button onclick="nav(1)">→</button>
+</div>
+
+<script>
+// ── ANGLE DRAWING (shared by static diagrams + explorer) ──
+function angleSVG(deg, color){
+  color = color || '#0081CF';
+  const cx=95, cy=98, r=74, ra=30;
+  const rad=deg*Math.PI/180;
+  const x2=(cx+r*Math.cos(rad)).toFixed(1), y2=(cy-r*Math.sin(rad)).toFixed(1);
+  let arc;
+  if(deg>=360){
+    // full circle indicator
+    arc=`<circle cx="${cx}" cy="${cy}" r="${ra}" fill="none" stroke="${color}" stroke-width="3.5"/>`;
+  } else {
+    const ax2=(cx+ra*Math.cos(rad)).toFixed(1), ay2=(cy-ra*Math.sin(rad)).toFixed(1);
+    const large=deg>180?1:0;
+    arc=`<path d="M ${cx+ra} ${cy} A ${ra} ${ra} 0 ${large} 0 ${ax2} ${ay2}" fill="none" stroke="${color}" stroke-width="3.5"/>`;
+  }
+  // label at mid-angle, just outside the arc
+  const mid=(deg/2)*Math.PI/180;
+  const lr=ra+22;
+  const lx=(cx+lr*Math.cos(mid)).toFixed(1), ly=(cy-lr*Math.sin(mid)+5).toFixed(1);
+  const ray2 = (deg>=360) ? '' :
+    `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#1A1333" stroke-width="3.2" stroke-linecap="round"/>`;
+  return `<svg viewBox="0 0 190 175" width="100%" style="max-width:160px">
+    <line x1="${cx}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke="#1A1333" stroke-width="3.2" stroke-linecap="round"/>
+    ${ray2}
+    ${arc}
+    <circle cx="${cx}" cy="${cy}" r="4.5" fill="#1A1333"/>
+    <text x="${lx}" y="${ly}" font-family="Fira Code" font-size="15" font-weight="700" fill="${color}" text-anchor="middle">${deg}°</text>
+  </svg>`;
+}
+// render all static diagrams
+document.querySelectorAll('[data-angle]').forEach(el=>{
+  el.innerHTML=angleSVG(parseInt(el.dataset.angle,10), el.dataset.color);
+});
+
+// SLIDE ENGINE
+const slides=document.querySelectorAll('.slide');
+const dotsEl=document.getElementById('dots');
+let cur=0;
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.onclick=()=>goTo(i);dotsEl.appendChild(d);});
+function goTo(n){slides[cur].classList.remove('active');slides[cur].classList.add('out');setTimeout(()=>slides[cur].classList.remove('out'),400);cur=(n+slides.length)%slides.length;slides[cur].classList.add('active');document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));document.getElementById('ctr').textContent=(cur+1)+' / '+slides.length;}
+function nav(d){goTo(cur+d);}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')nav(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')nav(-1);if(e.key==='f'||e.key==='F')document.documentElement.requestFullscreen?.();});
+
+// S8 EXPLORER
+function classify(deg){
+  if(deg<90) return ['Acute angle','Less than 90° — a small, sharp opening.'];
+  if(deg===90) return ['Right angle','Exactly 90° — a perfect square corner.'];
+  if(deg<180) return ['Obtuse angle','Greater than 90° but less than 180° — a wide opening.'];
+  if(deg===180) return ['Straight angle','Exactly 180° — the rays form a straight line.'];
+  if(deg<360) return ['Reflex angle','Greater than 180° but less than 360° — the big way around.'];
+  return ['Full rotation','Exactly 360° — one complete spin around the circle.'];
+}
+const calcAngles=[30,90,135,180,240,360];
+let calcIdx=1;
+(function(){
+  const list=document.getElementById('calc-list');
+  calcAngles.forEach((d,i)=>{
+    const row=document.createElement('div');
+    row.className='calc-row'+(i===calcIdx?' active':'');
+    row.textContent=d+'°';
+    row.onclick=()=>{calcIdx=i;list.querySelectorAll('.calc-row').forEach((r,j)=>r.classList.toggle('active',j===i));renderCalc();};
+    list.appendChild(row);
+  });
+  renderCalc();
+})();
+function renderCalc(){
+  const deg=calcAngles[calcIdx];
+  const [type,note]=classify(deg);
+  document.getElementById('calc-svg').innerHTML=angleSVG(deg,'#0081CF');
+  document.getElementById('calc-deg').textContent=deg+'°';
+  document.getElementById('calc-type').textContent=type;
+  document.getElementById('calc-note').textContent=note;
+}
+
+// S9 PRACTICE
+const practices=[
+  {q:'What type of angle is 47°?',steps:'47 is less than 90.',answer:'Acute angle.'},
+  {q:'What type of angle is 90°?',steps:'Exactly 90.',answer:'Right angle.'},
+  {q:'What is the complement of 60°?',steps:'Complement means it adds to 90.\n90 − 60 = 30',answer:'30°'},
+  {q:'What is the supplement of 130°?',steps:'Supplement means it adds to 180.\n180 − 130 = 50',answer:'50°'},
+  {q:'Two angles form a linear pair. One is 65°. Find the other.',steps:'A linear pair adds to 180.\n180 − 65 = 115',answer:'115°'},
+  {q:'∠1 = 2x and ∠2 = x are complementary. Find x.',steps:'Complementary → adds to 90.\n2x + x = 90\n3x = 90',answer:'x = 30  (so the angles are 60° and 30°)'},
+  {q:'Is 200° acute, obtuse, or reflex?',steps:'200 is greater than 180 (but less than 360).',answer:'Reflex angle.'},
+];
+let practiceIdx=0,practiceRevealed=false;
+(function(){
+  const el=document.getElementById('practice-list');
+  practices.forEach((p,i)=>{const row=document.createElement('div');row.className='practice-row'+(i===0?' active':'');row.innerHTML='<div class="p-q">'+p.q+'</div>';row.onclick=()=>{practiceIdx=i;practiceRevealed=false;document.getElementById('p-answer').innerHTML='';el.querySelectorAll('.practice-row').forEach((r,j)=>r.classList.toggle('active',j===i));renderPractice();};el.appendChild(row);});
+  renderPractice();
+})();
+function renderPractice(){document.getElementById('p-problem').textContent=practices[practiceIdx].q;if(!practiceRevealed)document.getElementById('p-answer').innerHTML='';}
+function revealPractice(){practiceRevealed=true;const p=practices[practiceIdx];document.getElementById('p-answer').innerHTML='<div style="font-size:12.5px;color:rgba(255,255,255,0.65);line-height:1.9;white-space:pre-wrap;margin-bottom:6px;">'+p.steps+'</div><div style="color:var(--teal);font-weight:800;">✅ '+p.answer+'</div>';}
+
+// QUIZ
+const questions=[
+  {q:'Choose the acute angle from the following.',
+   opts:['120°','90°','55°','135°'],ans:2,diff:'easy',exp:'Acute means less than 90°. Only 55° is below 90°.'},
+  {q:'Choose a pair of complementary angles.',
+   opts:['31° and 40°','89° and 2°','70° and 20°','90° and 1°'],ans:2,diff:'easy',exp:'Complementary angles add to 90°. 70 + 20 = 90 ✓.'},
+  {q:'An angle that measures exactly 90° is called a…',
+   opts:['Acute angle','Right angle','Obtuse angle','Straight angle'],ans:1,diff:'easy',exp:'Exactly 90° is a right angle — a square corner.'},
+  {q:'Choose the reflex angle from the following options.',
+   opts:['60°','360°','210°','179°'],ans:2,diff:'medium',exp:'A reflex angle is greater than 180° but less than 360°. 210° fits; 360° is a full rotation, not reflex.'},
+  {q:'The complement of a 35° angle is…',
+   opts:['145°','55°','65°','45°'],ans:1,diff:'medium',exp:'Complement adds to 90°. 90 − 35 = 55°.'},
+  {q:'If two angles A and B are congruent and angle A is 45°, then angle B is…',
+   opts:['50°','135°','45°','90°'],ans:2,diff:'medium',exp:'Congruent angles have equal measures, so angle B = 45°.'},
+  {q:'The supplement of a 110° angle is…',
+   opts:['70°','80°','90°','250°'],ans:0,diff:'medium',exp:'Supplement adds to 180°. 180 − 110 = 70°.'},
+  {q:'Which of these sums can be formed using two acute angles?',
+   opts:['320°','190°','120°','250°'],ans:2,diff:'hard',exp:'Each acute angle is under 90°, so two of them total less than 180°. Only 120° is possible (e.g. 60° + 60°).'},
+  {q:'Find the value of x if ∠1 = (4x + 5)° and ∠2 = (7x + 10)° form a linear pair.',
+   opts:['10°','20°','15°','5°'],ans:2,diff:'hard',exp:'A linear pair adds to 180°: (4x+5)+(7x+10)=180 → 11x+15=180 → 11x=165 → x=15.'},
+  {q:'Two angles form a straight line. One measures 125°. What is the other?',
+   opts:['55°','65°','75°','255°'],ans:0,diff:'hard',exp:'Angles on a straight line are supplementary (add to 180°). 180 − 125 = 55°.'},
+];
+let qIdx=0,score=0,answered=false;
+function renderQ(){const q=questions[qIdx];document.getElementById('q-text').innerHTML=q.q;document.getElementById('q-ctr').textContent='Question '+(qIdx+1)+' of '+questions.length;document.getElementById('qprog').style.width=(qIdx/questions.length*100)+'%';document.getElementById('q-fb').textContent='';document.getElementById('q-next').style.display='none';answered=false;const badge=document.getElementById('q-diff-badge');badge.className='diff-badge diff-'+q.diff;badge.textContent=q.diff==='easy'?'🟢 Warm-Up':q.diff==='medium'?'🟡 Getting Harder':'🔴 Challenge';const opts=document.getElementById('q-opts');opts.innerHTML='';q.opts.forEach((opt,i)=>{const btn=document.createElement('button');btn.className='quiz-opt';btn.textContent=opt;btn.onclick=()=>answer(i,btn);opts.appendChild(btn);});}
+function answer(i,btn){if(answered)return;answered=true;const correct=questions[qIdx].ans;document.querySelectorAll('.quiz-opt').forEach((b,idx)=>{if(idx===correct)b.classList.add('correct');else b.classList.add('wrong');b.disabled=true;});const fb=document.getElementById('q-fb');if(i===correct){score++;fb.innerHTML='🎉 Correct! <span style="font-weight:600;font-size:12.5px;">'+questions[qIdx].exp+'</span>';}else{fb.innerHTML='❌ Not quite. <span style="font-weight:600;font-size:12.5px;">'+questions[qIdx].exp+'</span>';}document.getElementById('q-next').style.display='inline-block';}
+function nextQ(){qIdx++;if(qIdx>=questions.length){document.getElementById('quiz-area').style.display='none';document.getElementById('quiz-done').style.display='block';document.getElementById('qprog').style.width='100%';const pct=Math.round(score/questions.length*100);document.getElementById('quiz-score').textContent=`You got ${score} out of ${questions.length} (${pct}%) ${pct>=90?'🌟 Outstanding!':pct>=70?'👍 Well done!':pct>=50?'💪 Keep practicing!':'📖 Review the slides and try again!'}`;}else renderQ();}
+function resetQuiz(){qIdx=0;score=0;document.getElementById('quiz-area').style.display='block';document.getElementById('quiz-done').style.display='none';renderQ();}
+renderQ();
+</script>
+</body>
+</html>
